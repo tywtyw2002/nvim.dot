@@ -238,7 +238,7 @@ M.lsp_config = function()
 end
 
 
-M.lsp_installr = function()
+M.lsp_installer = function()
   local lsp_installer_servers = require "nvim-lsp-installer.servers"
   for name, _ in pairs(as.lsp.servers) do
     ---@type boolean, table|string

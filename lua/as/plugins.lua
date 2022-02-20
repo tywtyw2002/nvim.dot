@@ -18,7 +18,19 @@ function P.load_conf(name)
 	return require(fmt("as.conf.%s", name))
 end
 
-P.conf = P.load_conf("other")
+function P.load_conf_as(name, func)
+	local r = ""
+	if func then
+		r = "." .. func
+	end
+	return "require" .. fmt("('as.conf.%s')", name) .. r .. "()"
+end
+
+--P.conf = P.load_conf("other")
+
+function P.conf(name)
+	return "require" .. fmt("('as.conf.other').%s()", name)
+end
 
 -- packer bootstrap
 function P.bootstrap_packer()
@@ -48,7 +60,7 @@ function P.bootstrap_packer()
    return packer
 end
 
-vim.cmd "packadd packer.nvim"
+pcall(vim.cmd, 'packadd packer.nvim')
 local present, packer = pcall(require, "packer")
 
 if not present then
@@ -88,22 +100,14 @@ packer.startup({
 			end,
 		})
 
-		--[[    -- ahmedkhalf/project.nvim
-    use {
-      "ahmedkhalf/project.nvim",
-      config = function()
-        require("project_nvim").setup()
-      end
-    }
---]]
 		-- telescope
 		use({
 			"nvim-telescope/telescope.nvim",
 			cmd = "Telescope",
 			module_pattern = "telescope.*",
-			config = P.load_conf("telescope").config,
-			requires = P.load_conf("telescope").requires,
-			setup = P.load_conf("telescope").setup,
+			setup = P.load_conf_as("telescope", "setup"),
+			config = P.load_conf_as("telescope", "config"),
+			requires = P.load_conf("telescope").requires
 		})
 
 		-- nvim-web-devicons
@@ -112,7 +116,10 @@ packer.startup({
 			after = "nvim-base16.lua",
 		})
 
-		use({ "folke/which-key.nvim", config = P.load_conf("whichkey") })
+		use({
+			"folke/which-key.nvim",
+			config = P.load_conf_as("whichkey")
+		})
 
 		-- 'nvim-lua/plenary.nvim'
 		use({ "nvim-lua/plenary.nvim" })
@@ -121,34 +128,37 @@ packer.startup({
 		use({
 			"lukas-reineke/indent-blankline.nvim",
 			event = "BufRead",
-			config = P.conf.blankline,
+			config = P.conf("blankline"),
 		})
 
 		-- Tree
 		use({
 			"kyazdani42/nvim-tree.lua",
-			config = P.load_conf("nvim-tree").config,
+			config = P.load_conf_as("nvim-tree", "config"),
 			--requires = "nvim-web-devicons",
 			cmd = { "NvimTreeToggle", "NvimTreeFocus" },
-			setup = P.load_conf("nvim-tree").setup,
+			setup = P.load_conf_as("nvim-tree", "setup"),
 		})
 
 		-- Tmux navigator
 		use({
 			"christoomey/vim-tmux-navigator",
-			config = P.conf.tmux_navigator,
+			config = P.conf("tmux_navigator"),
 		})
 
 		-----------------------------------------------------------------------------//
 		-- LSP
 		-----------------------------------------------------------------------------//
-		use({ "neovim/nvim-lspconfig", config = P.load_conf("lspconfig").lsp_config })
+		use({
+			"neovim/nvim-lspconfig",
+			config = P.load_conf_as("lspconfig", "lsp_config")
+		})
 
 		-- nvim-lsp-installer
 		use({
 			"williamboman/nvim-lsp-installer",
 			requires = "nvim-lspconfig",
-			config = P.load_conf("lspconfig").lsp_installr,
+			config = P.load_conf_as("lspconfig", "lsp_installer"),
 		})
 
 		-- null-ls
@@ -158,12 +168,12 @@ packer.startup({
 			-- trigger loading after lspconfig has started the other servers
 			-- since there is otherwise a race condition and null-ls' setup would
 			-- have to be moved into lspconfig.lua otherwise
-			config = P.load_conf("lspconfig").null_ls,
+			config = P.load_conf_as("lspconfig", "null_ls"),
 		})
 
 		use({
 			"ray-x/lsp_signature.nvim",
-			config = P.conf.lsp_signature,
+			config = P.conf("lsp_signature"),
 			after = "nvim-lspconfig",
 		})
 
@@ -172,9 +182,9 @@ packer.startup({
 			"folke/trouble.nvim",
 			keys = { "<leader>ld" },
 			cmd = { "TroubleToggle" },
-			setup = P.load_conf('trouble').setup,
+			setup = P.load_conf_as("trouble", "setup"),
 			requires = "nvim-web-devicons",
-			config = P.load_conf('trouble').config
+			config = P.load_conf_as("trouble", "config")
 		})
 
 		-----------------------------------------------------------------------------//
@@ -191,14 +201,14 @@ packer.startup({
 		use({
 			"hrsh7th/nvim-cmp",
 			after = "friendly-snippets",
-			config = P.load_conf("cmp"),
+			config = P.load_conf_as("cmp"),
 		})
 
 		use({
 			"L3MON4D3/LuaSnip",
 			wants = "friendly-snippets",
 			after = "nvim-cmp",
-			config = P.conf.luasnip,
+			config = P.conf("luasnip"),
 		})
 
 		use({
@@ -232,14 +242,14 @@ packer.startup({
 		-- Scrollbar
 		use({
 			"petertriho/nvim-scrollbar",
-			config = P.conf.scrollbar,
+			config = P.conf("scrollbar"),
 		})
 
 		-- glepnir/dashboard-nvim
 		use({
 			"glepnir/dashboard-nvim",
-			config = P.load_conf("dashboard").config,
-			setup = P.load_conf("dashboard").setup,
+			config = P.load_conf_as("dashboard", "config"),
+			setup = P.load_conf_as("dashboard", "setup"),
 		})
 
 		-- Standalone UI for nvim-lsp progress.
@@ -254,16 +264,15 @@ packer.startup({
 		use({
 			"akinsho/bufferline.nvim",
 			after = "nvim-web-devicons",
-			config = P.load_conf("bufferline").config,
-			setup = P.load_conf("bufferline").setup,
+			config = P.load_conf_as("bufferline", "config"),
+			setup = P.load_conf_as("bufferline", "setup"),
 		})
 
 		-- feline
 		use({
 			"feline-nvim/feline.nvim",
 			after = "nvim-web-devicons",
-      --requires = {'kyazdani42/nvim-web-devicons'},
-			config = P.load_conf("feline").config()
+      	config = P.load_conf_as("feline")
 		})
 
 		-----------------------------------------------------------------------------//
@@ -283,7 +292,7 @@ packer.startup({
 		use({
 			"phaazon/hop.nvim",
 			keys = { { "n", "s" }, "f", "F" },
-			config = P.load_conf "hop",
+			config = P.load_conf_as("hop"),
 		})
 
 		-- comment
@@ -291,17 +300,14 @@ packer.startup({
 			"numToStr/Comment.nvim",
 			module = "Comment",
 			keys = { "gcc" },
-			config = P.conf.comment,
+			config = P.conf("comment"),
 		})
 
 		-- tail space
 		use({
 			"bronson/vim-trailing-whitespace",
 			--config = P.load_conf('config').comment
-			config = function()
-				as.nnoremap(";fs", "<cmd>FixWhitespace<CR>")
-				--as.nnoremap(";fl", "<cmd>%s/\r//g<CR>")
-			end,
+			config = P.conf("trailspace")
 		})
 		--------------------------------------------------------------------------------
 		-- Utilitiess
@@ -310,29 +316,29 @@ packer.startup({
 		use({
 			"norcalli/nvim-colorizer.lua",
 			event = "BufRead",
-			config = P.conf.colorizer,
+			config = P.conf("colorizer"),
 		})
 
 		use({
 			"mbbill/undotree",
 			cmd = "UndotreeToggle",
 			keys = "<leader>u",
-			setup = P.conf.undotree_setup,
-			config = P.conf.undotree
+			setup = P.conf("undotree_setup"),
+			config = P.conf("undotree")
 		})
 
 		--"windwp/nvim-autopairs"
 		use({
 			"windwp/nvim-autopairs",
 			after = { "nvim-cmp" },
-			config = P.conf.autopairs,
+			config = P.conf("autopairs"),
 		})
 
 		-- "max397574/better-escape.nvim",
 		use({
 			"max397574/better-escape.nvim",
 			event = "InsertCharPre",
-			config = P.conf.better_escape,
+			config = P.conf("better_escape"),
 		})
 
 		--------------------------------------------------------------------------------
@@ -357,18 +363,7 @@ packer.startup({
 		use("lewis6991/impatient.nvim")
 
 		-- speed profiling
-		--[[
-  use {
-  'dstein64/vim-startuptime',
-  cmd = 'StartupTime',
-  config = function()
-    vim.g.startuptime_tries = 15
-    vim.g.startuptime_exe_args = { '+let g:auto_session_enabled = 0' }
-  end,
-  }
-  ]]
-		--
-
+		-- dstein64/vim-startuptime
 		--------------------------------------------------------------------------------
 		-- Syntax
 		--------------------------------------------------------------------------------
@@ -377,7 +372,7 @@ packer.startup({
 			"nvim-treesitter/nvim-treesitter",
 			run = ":TSUpdate",
 			event = "BufRead",
-			config = P.load_conf("treesitter"),
+			config = P.load_conf_as("treesitter"),
 		})
 
 		use({ "p00f/nvim-ts-rainbow", after = "nvim-treesitter" })
@@ -410,7 +405,7 @@ packer.startup({
 		--------------------------------------------------------------------------------
 		-- Git
 		--------------------------------------------------------------------------------
-		use({ "lewis6991/gitsigns.nvim", config = P.load_conf("gitsigns") })
+		use({ "lewis6991/gitsigns.nvim", config = P.load_conf_as("gitsigns") })
 
 		-- gitlinker fugitive
 		--use {
@@ -438,7 +433,7 @@ packer.startup({
 		-- conflict-marker.vim
 		use({
 			"rhysd/conflict-marker.vim",
-			config = P.conf.conflict_marker,
+			config = P.conf("conflict_marker"),
 		})
 
 		--  "TimUntersberger/neogit",
@@ -479,15 +474,5 @@ if not vim.g.packer_compiled_loaded and vim.loop.fs_stat(PACKER_COMPILED_PATH) t
 	vim.g.packer_compiled_loaded = true
 end
 
---as.augroup("PackerSetupInit", {
---	{
---		events = { "BufWritePost" },
---		targets = { "*/as/conf/*.lua" },
---		command = function()
---			as.invalidate("as.conf", true)
---			require("packer").compile()
---		end,
---	},
---})
 as.nnoremap("<leader>ps", [[<Cmd>PackerSync<CR>]])
 as.nnoremap("<leader>pc", [[<Cmd>PackerClean<CR>]])

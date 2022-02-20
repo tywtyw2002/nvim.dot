@@ -147,4 +147,10 @@ M.undotree_setup = function()
     })
 end
 
+M.trailspace = function()
+    require("which-key").register({
+        [";fs"] = {"<cmd>FixWhitespace<CR>", "Remove Trailing Space."}
+    })
+end
+
 return M

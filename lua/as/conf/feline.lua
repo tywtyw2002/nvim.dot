@@ -387,9 +387,7 @@ local function add_table(a, b)
    table.insert(a, b)
 end
 
-local M = {}
-
-M.config = function()
+return function()
     -- components are divided in 3 sections
     default.left = {}
     default.middle = {}
@@ -433,5 +431,3 @@ M.config = function()
         components = default.components,
     }
 end
-
-return M
