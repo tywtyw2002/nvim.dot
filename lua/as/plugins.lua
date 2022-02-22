@@ -180,9 +180,8 @@ packer.startup({
 		-- trouble
 		use({
 			"folke/trouble.nvim",
-			keys = { "<leader>ld" },
 			cmd = { "TroubleToggle" },
-			setup = P.load_conf_as("trouble", "setup"),
+			setup = "require('which-key').register(require('as.mappings').trouble)",
 			requires = "nvim-web-devicons",
 			config = P.load_conf_as("trouble", "config")
 		})
@@ -291,7 +290,7 @@ packer.startup({
 		-- easymotion phaazon/hop.nvim
 		use({
 			"phaazon/hop.nvim",
-			keys = { { "n", "s" }, "f", "F" },
+			keys = { { "n", "s" }, "f", "F", { "n", "/" } },
 			config = P.load_conf_as("hop"),
 		})
 
@@ -301,13 +300,14 @@ packer.startup({
 			module = "Comment",
 			keys = { "gcc" },
 			config = P.conf("comment"),
+			setup = 'require("which-key").register(require("as.mappings").comment)'
 		})
 
 		-- tail space
 		use({
 			"bronson/vim-trailing-whitespace",
-			--config = P.load_conf('config').comment
-			config = P.conf("trailspace")
+			--config = P.conf("trailspace")
+			config = 'require("which-key").register(require("as.mappings").trailspace)'
 		})
 		--------------------------------------------------------------------------------
 		-- Utilitiess
@@ -323,7 +323,8 @@ packer.startup({
 			"mbbill/undotree",
 			cmd = "UndotreeToggle",
 			keys = "<leader>u",
-			setup = P.conf("undotree_setup"),
+			--setup = P.conf("undotree_setup"),
+			setup = "require('which-key').register(require('as.mappings').undotree)",
 			config = P.conf("undotree")
 		})
 

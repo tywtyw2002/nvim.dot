@@ -5,11 +5,18 @@ M.blankline = function()
         indentLine_enabled = 1,
         char = "▏",
         filetype_exclude = {
-            "help", "terminal", "dashboard", "packer", "lspinfo",
-            "TelescopePrompt", "TelescopeResults", "nvchad_cheatsheet",
-            "lsp-installer", ""
+            "help",
+            "terminal",
+            "dashboard",
+            "packer",
+            "lspinfo",
+            "TelescopePrompt",
+            "TelescopeResults",
+            "nvchad_cheatsheet",
+            "lsp-installer",
+            "",
         },
-        buftype_exclude = {"terminal"},
+        buftype_exclude = { "terminal" },
         show_current_context = true,
         show_current_context_start = true,
         show_first_indent_level = true,
@@ -24,17 +31,17 @@ M.tmux_navigator = function()
     vim.g.tmux_navigator_disable_when_zoomed = 1
     vim.g.tmux_navigator_preserve_zoom = 1
     vim.g.tmux_navigator_save_on_switch = 2
-    require('which-key').register {
+    require("which-key").register({
         ["<C-H>"] = { "<cmd>TmuxNavigateLeft<cr>", "Tmux Left" },
-        ["<C-J>"] = { "<cmd>TmuxNavigateDown<cr>}", "Tmux Down"},
-        ["<C-K>"] = { "<cmd>TmuxNavigateUp<cr>", "Tmux UP"},
-        ["<C-L>"] = { "<cmd>TmuxNavigateRight<cr>", "Tmux Right"}
-    }
+        ["<C-J>"] = { "<cmd>TmuxNavigateDown<cr>}", "Tmux Down" },
+        ["<C-K>"] = { "<cmd>TmuxNavigateUp<cr>", "Tmux UP" },
+        ["<C-L>"] = { "<cmd>TmuxNavigateRight<cr>", "Tmux Right" },
+    })
 end
 
 M.colorizer = function()
     local default = {
-        filetypes = {"*"},
+        filetypes = { "*" },
         user_default_options = {
             RGB = true, -- #RGB hex codes
             RRGGBB = true, -- #RRGGBB hex codes
@@ -46,11 +53,11 @@ M.colorizer = function()
             css_fn = false, -- Enable all CSS *functions*: rgb_fn, hsl_fn
 
             -- Available modes: foreground, background
-            mode = "background" -- Set the display mode.
-        }
+            mode = "background", -- Set the display mode.
+        },
     }
     require("colorizer").setup(default["filetypes"], default["user_default_options"])
-    vim.cmd "ColorizerReloadAllBuffers"
+    vim.cmd("ColorizerReloadAllBuffers")
 end
 
 M.lsp_signature = function()
@@ -84,20 +91,20 @@ M.autopairs = function()
     local cmp_autopairs = require("nvim-autopairs.completion.cmp")
 
     local default = {
-        fast_wrap = {}
+        fast_wrap = {},
     }
 
     autopairs.setup(default)
 
-    local cmp = require "cmp"
+    local cmp = require("cmp")
     cmp.event:on("confirm_done", cmp_autopairs.on_confirm_done())
 end
 
 M.better_escape = function()
-    require("better_escape").setup {
+    require("better_escape").setup({
         mapping = { "jk" },
         timeout = 300,
-    }
+    })
 end
 
 M.conflict_marker = function()
@@ -107,7 +114,7 @@ M.conflict_marker = function()
     vim.g.conflict_marker_begin = "^<<<<<<< .*$"
     vim.g.conflict_marker_end = "^>>>>>>> .*$"
 
-    local set_bg = require('as.utils.core').bg
+    local set_bg = require("as.utils.core").bg
     set_bg("ConflictMarkerBegin", "#2f7366")
     set_bg("ConflictMarkerOurs", "#2e5049")
     set_bg("ConflictMarkerTheirs", "#344f69")
@@ -116,12 +123,12 @@ M.conflict_marker = function()
 end
 
 M.scrollbar = function()
-    require("scrollbar").setup {
-          handle = {
-            color = require("as.colors").get().one_bg2
-          },
-          excluded_filetypes = {"packer"}
-        }
+    require("scrollbar").setup({
+        handle = {
+            color = require("as.colors").get().one_bg2,
+        },
+        excluded_filetypes = { "packer" },
+    })
 end
 
 M.luasnip = function()
@@ -131,26 +138,25 @@ M.luasnip = function()
         updateevents = "TextChanged,TextChangedI",
     }
     luasnip.config.set_config(default)
-    require("luasnip/loaders/from_vscode").load { paths = require('as.core_config').luasnip_path }
+    require("luasnip/loaders/from_vscode").load({ paths = require("as.core_config").luasnip_path })
     --require("luasnip/loaders/from_vscode").load()
 end
-
 
 M.undotree = function()
     vim.g.undotree_TreeNodeShape = "◉" -- Alternative: '◦'
     vim.g.undotree_SetFocusWhenToggle = 1
 end
 
-M.undotree_setup = function()
-    require("which-key").register({
-        ["<leader>u"] = {"<cmd>UndotreeToggle<CR>", "undotree: toggle"}
-    })
-end
+--M.undotree_setup = function()
+--    require("which-key").register({
+--        ["<leader>u"] = { "<cmd>UndotreeToggle<CR>", "undotree: toggle" },
+--    })
+--end
 
-M.trailspace = function()
-    require("which-key").register({
-        [";fs"] = {"<cmd>FixWhitespace<CR>", "Remove Trailing Space."}
-    })
-end
+--M.trailspace = function()
+--    require("which-key").register({
+--        [";fs"] = { "<cmd>FixWhitespace<CR>", "Remove Trailing Space." },
+--    })
+--end
 
 return M

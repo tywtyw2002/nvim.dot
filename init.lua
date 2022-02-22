@@ -29,6 +29,7 @@ end
 -- Plugin Configurations
 ------------------------------------------------------------------------
 R 'as.globals'
+R 'as.autocmds'
 R 'as.settings'
 --R 'as.highlights'
 --R 'as.statusline'
