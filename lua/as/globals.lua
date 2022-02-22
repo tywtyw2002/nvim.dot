@@ -16,6 +16,13 @@ _G.as = {
   mappings = {},
 }
 
+
+function _G.dump(...)
+    local objects = vim.tbl_map(vim.inspect, {...})
+    print(unpack(objects))
+end
+
+
 -- inject mapping helpers into the global namespace
 R 'as.utils.mappings'
 
