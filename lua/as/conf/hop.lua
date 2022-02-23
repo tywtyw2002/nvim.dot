@@ -6,7 +6,7 @@ return function()
         char2_fallback_key = "<space>"
     })
     as.nnoremap("s", hop.hint_char2)
-    as.nnoremap("/", hop.hint_patterns)
+    --as.nnoremap("/", hop.hint_patterns)
     -- NOTE: override F/f using hop motions
     as.noremap({ "x", "n" }, "F", function()
         hop.hint_char1({

@@ -1,12 +1,12 @@
 return function()
-    local parser_configs = require("nvim-treesitter.parsers").get_parser_configs()
-    parser_configs.norg_meta = {
-        install_info = {
-            url = "https://github.com/nvim-neorg/tree-sitter-norg-meta",
-            files = { "src/parser.c" },
-            branch = "main",
-        },
-    }
+    --local parser_configs = require("nvim-treesitter.parsers").get_parser_configs()
+    --parser_configs.norg_meta = {
+    --    install_info = {
+    --        url = "https://github.com/nvim-neorg/tree-sitter-norg-meta",
+    --        files = { "src/parser.c" },
+    --        branch = "main",
+    --    },
+    --}
 
     require("nvim-treesitter.configs").setup({
         ensure_installed = "maintained",
@@ -51,15 +51,43 @@ return function()
             },
             move = {
                 enable = true,
-                set_jumps = true, -- whether to set jumps in the jumplist
+                set_jumps = false, -- whether to set jumps in the jumplist
                 goto_next_start = {
                     ["]m"] = "@function.outer",
                     ["]]"] = "@class.outer",
+                    ["]p"] = "@parameter.inner",
+                    ["<localleader>kf"] = "@function.inner",
+                    ["<localleader>kc"] = "@class.inner",
+                    ["<localleader>kd"] = "@conditional.inner",
+                    ["<localleader>kl"] = "@loop.inner",
+                    ["<localleader>kk"] = "@call.inner",
+                },
+                goto_next_end = {
+                    ["<localleader>kF"] = "@function.inner",
+                    ["<localleader>kC"] = "@class.inner",
+                    ["<localleader>kD"] = "@conditional.inner",
+                    ["<localleader>kL"] = "@loop.inner",
+                    ["<localleader>KP"] = "@parameter.inner",
+                    ["<localleader>kK"] = "@call.inner",
                 },
                 goto_previous_start = {
                     ["[m"] = "@function.outer",
                     ["[["] = "@class.outer",
+                    ["[p"] = "@parameter.inner",
+                    ["<localleader>jf"] = "@function.inner",
+                    ["<localleader>jc"] = "@class.inner",
+                    ["<localleader>jd"] = "@conditional.inner",
+                    ["<localleader>jl"] = "@loop.inner",
+                    ["<localleader>jk"] = "@call.inner",
                 },
+                goto_previous_end = {
+                    ["<localleader>jF"] = "@function.inner",
+                    ["<localleader>jC"] = "@class.inner",
+                    ["<localleader>jD"] = "@conditional.inner",
+                    ["<localleader>jL"] = "@loop.inner",
+                    ["<localleader>jP"] = "@parameter.inner",
+                    ["<localleader>jK"] = "@call.inner",
+                }
             },
             lsp_interop = {
                 enable = true,
@@ -72,7 +100,7 @@ return function()
         },
         rainbow = {
             enable = true,
-            disable = { "lua", "json", "html" },
+            disable = { "json", "html" },
             colors = {
                 "royalblue3",
                 "darkorange3",

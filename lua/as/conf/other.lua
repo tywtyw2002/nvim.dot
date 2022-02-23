@@ -32,10 +32,10 @@ M.tmux_navigator = function()
     vim.g.tmux_navigator_preserve_zoom = 1
     vim.g.tmux_navigator_save_on_switch = 2
     require("which-key").register({
-        ["<C-H>"] = { "<cmd>TmuxNavigateLeft<cr>", "Tmux Left" },
-        ["<C-J>"] = { "<cmd>TmuxNavigateDown<cr>}", "Tmux Down" },
-        ["<C-K>"] = { "<cmd>TmuxNavigateUp<cr>", "Tmux UP" },
-        ["<C-L>"] = { "<cmd>TmuxNavigateRight<cr>", "Tmux Right" },
+        ["<leader><C-H>"] = { "<cmd>TmuxNavigateLeft<cr>", "Tmux Left" },
+        ["<leader><C-J>"] = { "<cmd>TmuxNavigateDown<cr>}", "Tmux Down" },
+        ["<leader><C-K>"] = { "<cmd>TmuxNavigateUp<cr>", "Tmux UP" },
+        ["<leader><C-L>"] = { "<cmd>TmuxNavigateRight<cr>", "Tmux Right" },
     })
 end
 
@@ -158,5 +158,14 @@ end
 --        [";fs"] = { "<cmd>FixWhitespace<CR>", "Remove Trailing Space." },
 --    })
 --end
+
+M.notify = function()
+    local notify = require 'notify'
+
+    notify.setup()
+
+    vim.notify = notify
+    require('telescope').load_extension 'notify'
+end
 
 return M

@@ -14,41 +14,41 @@ return function()
         on_attach = function()
             require("which-key").register({
                 ["<leader>h"] = {
-                    name = "+gitsigns hunk",
-                    s = { gitsigns.stage_hunk, "stage" },
-                    u = { gitsigns.undo_stage_hunk, "undo stage" },
-                    r = { gitsigns.reset_hunk, "reset hunk" },
-                    p = { gitsigns.preview_hunk, "preview current hunk" },
-                    b = "blame current line",
+                    name = "+Gitsigns Hunk",
+                    s = { gitsigns.stage_hunk, "Gitsigns: Stage" },
+                    u = { gitsigns.undo_stage_hunk, "Gitsigns: Undo Stage" },
+                    r = { gitsigns.reset_hunk, "Gitsigns: Reset Hunk" },
+                    p = { gitsigns.preview_hunk, "Gitsigns: Preview Current Hunk" },
+                    b = { gitsigns.blame_line, "Gitsigns: Blame Current Line"},
                 },
                 ["<localleader>g"] = {
-                    name = "+git",
-                    w = { gitsigns.stage_buffer, "gitsigns: stage entire buffer" },
+                    name = "+Gitsigns Git",
+                    w = { gitsigns.stage_buffer, "Gitsigns: Stage Entire Buffer" },
                     r = {
-                        name = "+reset",
-                        e = { gitsigns.reset_buffer, "gitsigns: reset entire buffer" },
+                        name = "+Gitsigns Reset",
+                        e = { gitsigns.reset_buffer, "Gitsigns: Reset Entire Buffer" },
                     },
                     b = {
-                        name = "+blame",
-                        l = { gitsigns.blame_line, "gitsigns: blame current line" },
-                        d = { gitsigns.toggle_word_diff, "gitsigns: toggle word diff" },
+                        name = "+Gitsigns Blame",
+                        l = { gitsigns.blame_line, "Gitsigns: Blame Current Line" },
+                        d = { gitsigns.toggle_word_diff, "Gitsigns: Toggle Word Diff" },
                     },
                 },
                 ["[h"] = {
                     "&diff ? ']h' : '<cmd>lua require\"gitsigns\".next_hunk()<CR>'",
-                    "go to next git hunk",
+                    "Gitsigns: Next git hunk",
                     expr = true,
                 },
                 ["]h"] = {
                     "&diff ? '[h' : '<cmd>lua require\"gitsigns\".prev_hunk()<CR>'",
-                    "go to previous git hunk",
+                    "Gitsigns: Previous git hunk",
                     expr = true,
                 },
                 ["<leader>lm"] = {
                     function()
                         gitsigns.setqflist("all")
                     end,
-                    "gitsigns: list modified in quickfix",
+                    "Gitsigns: List Modified in Quickfix",
                 },
             })
 

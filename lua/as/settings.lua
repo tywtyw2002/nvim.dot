@@ -2,8 +2,8 @@ local fn = vim.fn
 local opt = vim.opt
 local g = vim.g
 
---g.nvchad_theme = "tomorrow-night"
-g.nvchad_theme = "gruvchad"
+g.nvchad_theme = "tomorrow-night"
+--g.nvchad_theme = "gruvchad"
 opt.cul = true -- cursor line
 
 -- GUI
@@ -89,8 +89,8 @@ opt.formatoptions = {
 -- Folds {{{1
 -----------------------------------------------------------------------------//
 opt.foldtext = 'v:lua.as.folds()'
-opt.foldopen = opt.foldopen + 'search'
-opt.foldlevelstart = 3
+--opt.foldopen = opt.foldopen + 'search'
+opt.foldlevelstart = 10
 opt.foldexpr = 'nvim_treesitter#foldexpr()'
 opt.foldmethod = 'expr'
 -----------------------------------------------------------------------------//
@@ -281,8 +281,8 @@ end
 opt.ignorecase = true
 opt.smartcase = true
 opt.wrapscan = true -- Searches wrap around the end of the file
-opt.scrolloff = 9
-opt.sidescrolloff = 10
+opt.scrolloff = 3
+opt.sidescrolloff = 5
 opt.sidescroll = 1
 -----------------------------------------------------------------------------//
 -- Spelling {{{1

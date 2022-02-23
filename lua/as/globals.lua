@@ -25,6 +25,7 @@ end
 
 -- inject mapping helpers into the global namespace
 R 'as.utils.mappings'
+R 'as.utils.folds'
 
 
 local L = vim.log.levels

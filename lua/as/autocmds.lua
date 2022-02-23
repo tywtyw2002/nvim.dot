@@ -31,3 +31,18 @@ as.augroup('ClearCommandMessages', {
     command = clear_commandline(),
   },
 })
+
+-- Reload VIM RC
+--vim.api.nvim_add_user_command(
+as.command{
+  "ReloadConfig",
+  function ()
+    local ok, msg = pcall(vim.cmd, 'source $MYVIMRC | redraw | silent doautocmd ColorScheme')
+    msg = ok and 'sourced ' .. vim.fn.fnamemodify(vim.env.MYVIMRC, ':t') or msg
+    vim.notify(msg)
+  end
+}
+
+
+-- Mapping
+require('as.mappings').do_misc_mapping()
