@@ -36,8 +36,12 @@ return function()
                     ["if"] = "@function.inner",
                     ["ac"] = "@class.outer",
                     ["ic"] = "@class.inner",
-                    ["aC"] = "@conditional.outer",
-                    ["iC"] = "@conditional.inner",
+                    ["ad"] = "@conditional.outer",
+                    ["id"] = "@conditional.inner",
+                    ["ak"] = "@call.outer",
+                    ["ik"] = "@call.inner",
+                    ["as"] = "@statement.outer",
+                    ["is"] = "@statement.inner",
                 },
             },
             swap = {
@@ -56,6 +60,8 @@ return function()
                     ["]m"] = "@function.outer",
                     ["]]"] = "@class.outer",
                     ["]p"] = "@parameter.inner",
+                    ["]b"] = "@block.outer",
+                    ["]s"] = "@statement.outer",
                     ["<localleader>kf"] = "@function.inner",
                     ["<localleader>kc"] = "@class.inner",
                     ["<localleader>kd"] = "@conditional.inner",
@@ -69,11 +75,15 @@ return function()
                     ["<localleader>kL"] = "@loop.inner",
                     ["<localleader>KP"] = "@parameter.inner",
                     ["<localleader>kK"] = "@call.inner",
+                    ["<localleader>kB"] = "@block.outer",
+                    ["<localleader>kS"] = "@statement.outer",
                 },
                 goto_previous_start = {
                     ["[m"] = "@function.outer",
                     ["[["] = "@class.outer",
                     ["[p"] = "@parameter.inner",
+                    ["[b"] = "@block.outer",
+                    ["[s"] = "@statement.outer",
                     ["<localleader>jf"] = "@function.inner",
                     ["<localleader>jc"] = "@class.inner",
                     ["<localleader>jd"] = "@conditional.inner",
@@ -87,6 +97,8 @@ return function()
                     ["<localleader>jL"] = "@loop.inner",
                     ["<localleader>jP"] = "@parameter.inner",
                     ["<localleader>jK"] = "@call.inner",
+                    ["<localleader>jB"] = "@block.outer",
+                    ["<localleader>jS"] = "@statement.outer",
                 }
             },
             lsp_interop = {
@@ -115,5 +127,8 @@ return function()
             use_virtual_text = true,
             lint_events = { "BufWrite", "CursorHold" },
         },
+        playground = {
+            enable = true,
+        }
     })
 end
