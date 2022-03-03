@@ -191,7 +191,8 @@ opt.autoindent = true
 opt.shiftround = true
 opt.expandtab = true
 opt.smartindent = true
-opt.shiftwidth = 2
+opt.shiftwidth = 4
+opt.tabstop = 4
 -----------------------------------------------------------------------------//
 -- vim.o.debug = "msg"
 --- NOTE: remove this once 0.6 lands, it is now default
