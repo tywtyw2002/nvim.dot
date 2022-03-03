@@ -269,6 +269,7 @@ packer.startup({
         -- Standalone UI for nvim-lsp progress.
         use({
             "j-hui/fidget.nvim",
+            disable=true,
             config = function()
                 require("fidget").setup({})
             end,

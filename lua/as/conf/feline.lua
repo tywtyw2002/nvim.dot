@@ -12,8 +12,8 @@ local default = {
 }
 default.icon_styles = {
     default = {
-        left = "",
-        right = " ",
+        left = "",
+        right = "",
         main_icon = "  ",
         vi_mode_icon = " ",
         position_icon = " ",
@@ -86,7 +86,7 @@ default.file_name = {
         local extension = vim.fn.expand("%:e")
         local icon = require("nvim-web-devicons").get_icon(filename, extension)
         if icon == nil then
-            icon = "  "
+            icon = " "
             return icon
         end
         return " " .. icon .. " " .. filename .. " "
@@ -135,7 +135,7 @@ default.diff = {
             fg = default.colors.grey_fg2,
             bg = default.colors.statusline_bg,
         },
-        icon = " ",
+        icon = "  ",
     },
 
     change = {
@@ -153,7 +153,7 @@ default.diff = {
             fg = default.colors.grey_fg2,
             bg = default.colors.statusline_bg,
         },
-        icon = "  ",
+        icon = "  ",
     },
 }
 
