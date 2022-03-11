@@ -4,13 +4,19 @@ local M = {}
 
 local local_mappings = function()
     -- Don't copy the replaced text after pasting in visual mode
-    map_wrapper("v", "p", '"_dP')
+    map_wrapper("v", "p", "p:let @+=@0<CR>")
 
     -- don't yank text on cut ( x )
-    --map_wrapper({ "n", "v" }, "x", '"_x')
+    map_wrapper({ "n", "v" }, "x", '""x')
+
+    -- don't yank text on cut ( c )
+    map_wrapper({ "n", "v" }, "c", '""c')
 
     -- don't yank text on delete ( dd )
-    --map_wrapper({ "n", "v" }, "d", '"_d')
+    map_wrapper({ "n", "v" }, "d", '""d')
+
+    map_wrapper("n", "<localleader>p", '""p')
+    map_wrapper("n", "<localleader>P", '""P')
 
     -- Allow moving the cursor through wrapped lines with j, k, <Up> and <Down>
     -- http://www.reddit.com/r/vim/comments/2k4cbr/problem_with_gj_and_gk/
@@ -96,8 +102,22 @@ local local_mappings = function()
     vim.cmd [[cmap <C-\> <Plug>(TelescopeFuzzyCommandSearch)]]
 end
 
+local neovide_mappings = function()
+    if not vim.g.neovide then
+        return
+    end
+
+    vim.g.neovide_input_use_logo = true
+
+    map_wrapper("n", "<D-s>", ":w <CR>")
+    map_wrapper("i", "<D-v>", "<C-r>*")
+    vim.cmd [[cmap <D-v> <C-r>*]]
+    map_wrapper({ "n", "i"}, "<D-/>", "<cmd>lua require('Comment.api').toggle_current_linewise() <CR>")
+end
+
 M.do_misc_mapping = function()
     local_mappings()
+    neovide_mappings()
 end
 
 -- Plugins

@@ -34,12 +34,12 @@ return function()
                         d = { gitsigns.toggle_word_diff, "Gitsigns: Toggle Word Diff" },
                     },
                 },
-                ["[h"] = {
+                ["]h"] = {
                     "&diff ? ']h' : '<cmd>lua require\"gitsigns\".next_hunk()<CR>'",
                     "Gitsigns: Next git hunk",
                     expr = true,
                 },
-                ["]h"] = {
+                ["[h"] = {
                     "&diff ? '[h' : '<cmd>lua require\"gitsigns\".prev_hunk()<CR>'",
                     "Gitsigns: Previous git hunk",
                     expr = true,

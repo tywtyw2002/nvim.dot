@@ -132,7 +132,7 @@ default.diff = {
     add = {
         provider = "git_diff_added",
         hl = {
-            fg = default.colors.grey_fg2,
+            fg = default.colors.green,
             bg = default.colors.statusline_bg,
         },
         icon = "  ",
@@ -141,7 +141,7 @@ default.diff = {
     change = {
         provider = "git_diff_changed",
         hl = {
-            fg = default.colors.grey_fg2,
+            fg = default.colors.orange,
             bg = default.colors.statusline_bg,
         },
         icon = "  ",
@@ -150,7 +150,7 @@ default.diff = {
     remove = {
         provider = "git_diff_removed",
         hl = {
-            fg = default.colors.grey_fg2,
+            fg = default.colors.red,
             bg = default.colors.statusline_bg,
         },
         icon = "  ",
@@ -194,7 +194,7 @@ default.diagnostic = {
         enabled = function()
             return default.lsp.diagnostics_exist(default.lsp_severity.HINT)
         end,
-        hl = { fg = default.colors.grey_fg2 },
+        hl = { fg = default.colors.purple },
         icon = "  ",
     },
 

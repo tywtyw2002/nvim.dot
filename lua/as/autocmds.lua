@@ -5,6 +5,8 @@ vim.cmd [[ au TermOpen term://* setlocal nonumber norelativenumber | setfiletype
 -- Don't show status line on certain windows
 vim.cmd [[ autocmd BufEnter,BufRead,BufWinEnter,FileType,WinEnter * lua require("as.utils.core").hide_statusline() ]]
 
+-- hightlight text after yank.
+vim.cmd [[  au TextYankPost * silent! lua vim.highlight.on_yank{} ]]
 
 -- File autocmds.
 vim.cmd([[
