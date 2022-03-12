@@ -33,7 +33,7 @@ augroup END
 vim.cmd([[
 augroup _python
   autocmd FileType python set tabstop=4
-  autocmd FileType python setshiftwidth=4
+  autocmd FileType python set shiftwidth=4
   autocmd FileType python set softtabstop=4
   autocmd FileType python set textwidth=79
 ]])

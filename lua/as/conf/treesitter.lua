@@ -47,10 +47,10 @@ return function()
             swap = {
                 enable = true,
                 swap_next = {
-                    ["[w"] = "@parameter.inner",
+                    ["]w"] = "@parameter.inner",
                 },
                 swap_previous = {
-                    ["]w"] = "@parameter.inner",
+                    ["[w"] = "@parameter.inner",
                 },
             },
             move = {
@@ -130,5 +130,62 @@ return function()
         playground = {
             enable = true,
         }
+    })
+
+    local ok, w = pcall(require, "which-key")
+
+    if not ok then
+        return
+    end
+
+    w.register({
+        [']p'] = '[SI] Parameter',
+        [']b'] = '[SO] Block',
+        [']s'] = '[SO] Statement',
+        [']]'] = '[SO] Class',
+        [']w'] = 'Swap Next Parameter',
+        ['[p'] = '[SI] Parameter',
+        ['[b'] = '[SO] Block',
+        ['[s'] = '[SO] Statement',
+        ['[['] = '[SO] Class',
+        ['[w'] = 'Swap Previous Parameter',
+        ['<localleader>j'] = {
+            name = 'Go Previous [I]',
+            f = 'Function',
+            c = 'Class',
+            d = 'Conditional',
+            l = 'Loop',
+            k = 'Call',
+            P = '[E] Parameter',
+            B = '[EO] Block',
+            S = '[EO] Statement'
+        },
+        ['<localleader>k'] = {
+            name = 'Go Next [I]',
+            f = 'Function',
+            c = 'Class',
+            d = 'Conditional',
+            l = 'Loop',
+            k = 'Call',
+            P = '[E] Parameter',
+            B = '[EO] Block',
+            S = '[EO] Statement'
+        }
+    })
+    w.register({
+        ['af'] = 'function.outer',
+        ['if'] = 'function.inner',
+        ["ac"] = "class.outer",
+        ["ic"] = "class.inner",
+        ["ad"] = "conditional.outer",
+        ["id"] = "conditional.inner",
+        ["ak"] = "call.outer",
+        ["ik"] = "call.inner",
+        ["as"] = "statement.outer",
+        ["is"] = "statement.inner",
+    },
+    {
+        mode = 'o',
+        noremap = false
     })
 end
