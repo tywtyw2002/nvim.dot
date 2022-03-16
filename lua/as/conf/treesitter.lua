@@ -1,3 +1,14 @@
+local ts = "<cmd>lua require'nvim-treesitter.textobjects.move'"
+
+
+local function cmd_go_start(query)
+    return ts .. '.goto_previous_start("' .. query .. '")<CR>'
+end
+
+local function cmd_go_end(query)
+    return ts .. '.goto_next_end("' .. query .. '")<CR><Right>'
+end
+
 return function()
     --local parser_configs = require("nvim-treesitter.parsers").get_parser_configs()
     --parser_configs.norg_meta = {
@@ -73,7 +84,7 @@ return function()
                     ["<localleader>kC"] = "@class.inner",
                     ["<localleader>kD"] = "@conditional.inner",
                     ["<localleader>kL"] = "@loop.inner",
-                    ["<localleader>KP"] = "@parameter.inner",
+                    ["<localleader>kP"] = "@parameter.inner",
                     ["<localleader>kK"] = "@call.inner",
                     ["<localleader>kB"] = "@block.outer",
                     ["<localleader>kS"] = "@statement.outer",
@@ -99,7 +110,7 @@ return function()
                     ["<localleader>jK"] = "@call.inner",
                     ["<localleader>jB"] = "@block.outer",
                     ["<localleader>jS"] = "@statement.outer",
-                }
+                },
             },
             lsp_interop = {
                 enable = true,
@@ -129,7 +140,7 @@ return function()
         },
         playground = {
             enable = true,
-        }
+        },
     })
 
     local ok, w = pcall(require, "which-key")
@@ -139,42 +150,52 @@ return function()
     end
 
     w.register({
-        [']p'] = '[SI] Parameter',
-        [']b'] = '[SO] Block',
-        [']s'] = '[SO] Statement',
-        [']]'] = '[SO] Class',
-        [']w'] = 'Swap Next Parameter',
-        ['[p'] = '[SI] Parameter',
-        ['[b'] = '[SO] Block',
-        ['[s'] = '[SO] Statement',
-        ['[['] = '[SO] Class',
-        ['[w'] = 'Swap Previous Parameter',
-        ['<localleader>j'] = {
-            name = 'Go Previous [I]',
-            f = 'Function',
-            c = 'Class',
-            d = 'Conditional',
-            l = 'Loop',
-            k = 'Call',
-            P = '[E] Parameter',
-            B = '[EO] Block',
-            S = '[EO] Statement'
+        ["]p"] = "[S] Parameter Inner",
+        ["]b"] = "[S] Block Outer",
+        ["]s"] = "[S] Statement Outer",
+        ["]]"] = "[S] Class Outer",
+        ["]w"] = "Swap Next Parameter",
+        ["[p"] = "[S] Parameter Inner",
+        ["[b"] = "[S] Block Outer",
+        ["[s"] = "[S] Statement Outer",
+        ["[["] = "[S] Class Outer",
+        ["[w"] = "Swap Previous Parameter",
+        ["<localleader>j"] = {
+            name = "Go Previous [I]",
+            f = "[S]Function Inner",
+            c = "[S]Class Inner",
+            d = "[S]Conditional Inner",
+            l = "[S]Loop Inner",
+            k = "[S]Call Inner",
+            F = "[E]Function Inner",
+            C = "[E]Class Inner",
+            D = "[E]Conditional Inner",
+            L = "[E]Loop Inner",
+            K = "[E]Call Inner",
+            P = "[E] Parameter Inner",
+            B = "[E] Block Inner",
+            S = "[E] Statement Outer",
         },
-        ['<localleader>k'] = {
-            name = 'Go Next [I]',
-            f = 'Function',
-            c = 'Class',
-            d = 'Conditional',
-            l = 'Loop',
-            k = 'Call',
-            P = '[E] Parameter',
-            B = '[EO] Block',
-            S = '[EO] Statement'
-        }
+        ["<localleader>k"] = {
+            name = "Go Next [I]",
+            f = "[S]Function Inner",
+            c = "[S]Class Inner",
+            d = "[S]Conditional Inner",
+            l = "[S]Loop Inner",
+            k = "[S]Call Inner",
+            F = "[E]Function Inner",
+            C = "[E]Class Inner",
+            D = "[E]Conditional Inner",
+            L = "[E]Loop Inner",
+            K = "[E]Call Inner",
+            P = "[E] Parameter Inner",
+            B = "[E] Block Inner",
+            S = "[E] Statement Outer",
+        },
     })
     w.register({
-        ['af'] = 'function.outer',
-        ['if'] = 'function.inner',
+        ["af"] = "function.outer",
+        ["if"] = "function.inner",
         ["ac"] = "class.outer",
         ["ic"] = "class.inner",
         ["ad"] = "conditional.outer",
@@ -183,9 +204,94 @@ return function()
         ["ik"] = "call.inner",
         ["as"] = "statement.outer",
         ["is"] = "statement.inner",
-    },
-    {
-        mode = 'o',
-        noremap = false
+    }, {
+        mode = "o",
+        noremap = false,
+    })
+    w.register({
+        ["sc"] = {
+            cmd_go_start("@class.outer"),
+            "Start Class",
+        },
+        ["sC"] = {
+            cmd_go_start("@class.inner"),
+            "Start Class Inner",
+        },
+        ["ec"] = {
+            cmd_go_end("@class.outer"),
+            "End Class",
+        },
+        ["eC"] = {
+            cmd_go_end("@class.inner"),
+            "End Class Inner",
+        },
+        ["sd"] = {
+            cmd_go_start("@conditional.outer"),
+            "Start Conditional",
+        },
+        ["sD"] = {
+            cmd_go_start("@conditional.inner"),
+            "Start Conditional Inner",
+        },
+        ["ed"] = {
+            cmd_go_end("@conditional.outer"),
+            "End Conditional",
+        },
+        ["eD"] = {
+            cmd_go_end("@conditional.inner"),
+            "End Conditional Inner",
+        },
+        ["sf"] = {
+            cmd_go_start("@function.outer"),
+            "Start Function",
+        },
+        ["sF"] = {
+            cmd_go_start("@function.inner"),
+            "Start Function Inner",
+        },
+        ["ef"] = {
+            cmd_go_end("@function.outer"),
+            "End Function",
+        },
+        ["eF"] = {
+            cmd_go_end("@function.inner"),
+            "End Function Inner",
+        },
+        ["sl"] = {
+            cmd_go_start("@loop.outer"),
+            "Start Loop",
+        },
+        ["sL"] = {
+            cmd_go_start("@loop.inner"),
+            "Start Loop inner",
+        },
+        ["el"] = {
+            cmd_go_end("@loop.outer"),
+            "End Loop",
+        },
+        ["eL"] = {
+            cmd_go_end("@loop.inner"),
+            "End Loop inner",
+        },
+        ["ss"] = {
+            cmd_go_start("@statement.outer"),
+            "Start Statement",
+        },
+        ["es"] = {
+            cmd_go_end("@statement.outer"),
+            "End Statement",
+        },
+        ["sp"] = {
+            cmd_go_start("@parameter.outer"),
+            "Start Parameter",
+        },
+        ["ep"] = {
+            cmd_go_end("@parameter.outer"),
+            "End Parameter",
+        },
+    }, {
+        mode = "i",
+        noremap = false,
+        prefix = "<C-g>",
     })
 end

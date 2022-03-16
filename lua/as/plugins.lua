@@ -407,17 +407,18 @@ packer.startup({
             "nvim-treesitter/nvim-treesitter-textobjects",
             after = "nvim-treesitter",
         })
-        --use {
-        --  "nvim-treesitter/playground",
-        --  keys = "<leader>E",
-        --  cmd = {"TSPlaygroundToggle", "TSHighlightCapturesUnderCursor"},
-        --  setup = function()
-        --    require("which-key").register {["<leader>E"] = "treesitter: highlight cursor group"}
-        --  end,
-        --  config = function()
-        --    as.nnoremap("<leader>E", "<Cmd>TSHighlightCapturesUnderCursor<CR>")
-        --  end
-        --}
+        use {
+          "nvim-treesitter/playground",
+          disable=true,
+          keys = "<leader>E",
+          cmd = {"TSPlaygroundToggle", "TSHighlightCapturesUnderCursor"},
+          setup = function()
+            require("which-key").register {["<leader>E"] = "treesitter: highlight cursor group"}
+          end,
+          config = function()
+            as.nnoremap("<leader>E", "<Cmd>TSHighlightCapturesUnderCursor<CR>")
+          end
+        }
 
         --[[    -- Use <Tab> to escape from pairs such as ""|''|() etc.
   use {
