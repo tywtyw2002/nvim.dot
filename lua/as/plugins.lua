@@ -85,8 +85,6 @@ packer.init({
     --log = { level = 'debug'}
 })
 
---vim.cmd("packadd! cfilter")
-
 packer.startup({
     function(use, use_rocks)
         --use({"wbthomason/packer.nvim", opt = true })
@@ -255,12 +253,6 @@ packer.startup({
             config = P.conf("scrollbar"),
         })
 
-        -- glepnir/dashboard-nvim
-        --use({
-        --  "glepnir/dashboard-nvim",
-        --  config = P.load_conf_as("dashboard", "config"),
-        --  setup = P.load_conf_as("dashboard", "setup"),
-        --})
         -- goolord/alpha-nvim
         use({
             "goolord/alpha-nvim",
@@ -331,15 +323,7 @@ packer.startup({
             setup = 'require("which-key").register(require("as.mappings").comment)',
         })
 
-        -- tail space
-        --use({
-        --    "bronson/vim-trailing-whitespace",
-        --    disable=true,
-        --    --config = P.conf("trailspace")
-        --    config = 'require("which-key").register(require("as.mappings").trailspace)',
-        --})
-
-        -- mini
+        -- mini (Tailspace)
         use({
             "echasnovski/mini.nvim",
             config = P.conf("trailspace"),
@@ -441,18 +425,18 @@ packer.startup({
         })
 
         --[[    -- Use <Tab> to escape from pairs such as ""|''|() etc.
-  use {
-  'abecodes/tabout.nvim',
-  wants = { 'nvim-treesitter' },
-  --after = { 'nvim-cmp' },
-  config = function()
-    require('tabout').setup {
-    completion = false,
-    ignore_beginning = false,
-    }
-  end,
-  }
---]]
+          use {
+          'abecodes/tabout.nvim',
+          wants = { 'nvim-treesitter' },
+          --after = { 'nvim-cmp' },
+          config = function()
+            require('tabout').setup {
+            completion = false,
+            ignore_beginning = false,
+            }
+          end,
+          }
+        --]]
         --------------------------------------------------------------------------------
         -- Git
         --------------------------------------------------------------------------------
@@ -488,8 +472,6 @@ packer.startup({
         })
 
         --  "TimUntersberger/neogit",
-
-        --use "chriskempson/vim-tomorrow-theme"
     end,
     log = { level = "info" },
     config = {
