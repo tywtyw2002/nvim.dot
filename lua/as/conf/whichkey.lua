@@ -30,4 +30,20 @@ return function()
             v = { "j", "k" },
         },
     })
+    -- Register general Mappings
+    wk.register(require("as.mappings").general_mappings)
+    -- Which-key
+    wk.register({
+        ["<leader>wK"] = {
+            "<cmd> WhichKey <CR>",
+            "Which-key: All Keymaps ",
+        },
+        ["<leader>wk"] = {
+            function()
+                local input = vim.fn.input("WhichKey: ")
+                vim.cmd("WhichKey " .. input)
+            end,
+            "Which-key: Query ",
+        },
+    })
 end

@@ -1,8 +1,7 @@
 local fn = vim.fn
 local fmt = string.format
 
-local PACKER_COMPILED_PATH = fn.stdpath("cache")
-    .. "/packer/packer_compiled.lua"
+local PACKER_COMPILED_PATH = fn.stdpath("cache") .. "/packer/packer_compiled.lua"
 
 local P = {}
 
@@ -35,8 +34,7 @@ end
 
 -- packer bootstrap
 function P.bootstrap_packer()
-    local packer_path = vim.fn.stdpath("data")
-        .. "/site/pack/packer/opt/packer.nvim"
+    local packer_path = vim.fn.stdpath("data") .. "/site/pack/packer/opt/packer.nvim"
 
     print("Cloning packer..")
     -- remove the dir before cloning
@@ -56,12 +54,7 @@ function P.bootstrap_packer()
     if present then
         print("Packer cloned successfully.")
     else
-        error(
-            "Couldn't clone packer !\nPacker path: "
-                .. packer_path
-                .. "\n"
-                .. packer
-        )
+        error("Couldn't clone packer !\nPacker path: " .. packer_path .. "\n" .. packer)
     end
 
     return packer
@@ -150,7 +143,7 @@ packer.startup({
         -- Tree
         use({
             "kyazdani42/nvim-tree.lua",
-            ft = 'alpha',
+            ft = "alpha",
             config = P.load_conf_as("nvim-tree", "config"),
             --requires = "nvim-web-devicons",
             cmd = { "NvimTreeToggle", "NvimTreeFocus" },
@@ -264,9 +257,9 @@ packer.startup({
 
         -- glepnir/dashboard-nvim
         --use({
-        --	"glepnir/dashboard-nvim",
-        --	config = P.load_conf_as("dashboard", "config"),
-        --	setup = P.load_conf_as("dashboard", "setup"),
+        --  "glepnir/dashboard-nvim",
+        --  config = P.load_conf_as("dashboard", "config"),
+        --  setup = P.load_conf_as("dashboard", "setup"),
         --})
         -- goolord/alpha-nvim
         use({
@@ -278,7 +271,7 @@ packer.startup({
         -- Standalone UI for nvim-lsp progress.
         use({
             "j-hui/fidget.nvim",
-            disable=true,
+            disable = true,
             config = function()
                 require("fidget").setup({})
             end,
@@ -350,7 +343,7 @@ packer.startup({
         use({
             "echasnovski/mini.nvim",
             config = P.conf("trailspace"),
-            setup = 'require("which-key").register(require("as.mappings").trailspace)'
+            setup = 'require("which-key").register(require("as.mappings").trailspace)',
         })
 
         use("andymass/vim-matchup")
@@ -392,6 +385,12 @@ packer.startup({
             config = P.conf("notify"),
         })
 
+        use({
+            "NvChad/nvterm",
+            config = P.conf("nvterm"),
+            setup = "require('which-key').register(require('as.mappings').nvterm)",
+        })
+
         --------------------------------------------------------------------------------
         -- Profiling & Startup
         --------------------------------------------------------------------------------
@@ -428,18 +427,18 @@ packer.startup({
             "nvim-treesitter/nvim-treesitter-textobjects",
             after = "nvim-treesitter",
         })
-        use {
-          "nvim-treesitter/playground",
-          disable=true,
-          keys = "<leader>E",
-          cmd = {"TSPlaygroundToggle", "TSHighlightCapturesUnderCursor"},
-          setup = function()
-            require("which-key").register {["<leader>E"] = "treesitter: highlight cursor group"}
-          end,
-          config = function()
-            as.nnoremap("<leader>E", "<Cmd>TSHighlightCapturesUnderCursor<CR>")
-          end
-        }
+        use({
+            "nvim-treesitter/playground",
+            disable = true,
+            keys = "<leader>E",
+            cmd = { "TSPlaygroundToggle", "TSHighlightCapturesUnderCursor" },
+            setup = function()
+                require("which-key").register({ ["<leader>E"] = "treesitter: highlight cursor group" })
+            end,
+            config = function()
+                as.nnoremap("<leader>E", "<Cmd>TSHighlightCapturesUnderCursor<CR>")
+            end,
+        })
 
         --[[    -- Use <Tab> to escape from pairs such as ""|''|() etc.
   use {
@@ -521,9 +520,7 @@ as.command({
     end,
 })
 
-if
-    not vim.g.packer_compiled_loaded and vim.loop.fs_stat(PACKER_COMPILED_PATH)
-then
+if not vim.g.packer_compiled_loaded and vim.loop.fs_stat(PACKER_COMPILED_PATH) then
     as.source(PACKER_COMPILED_PATH)
     vim.g.packer_compiled_loaded = true
 end

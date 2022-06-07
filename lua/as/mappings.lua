@@ -1,6 +1,10 @@
-local map_wrapper = require('as.utils.core').map
+local map_wrapper = require("as.utils.core").map
 
 local M = {}
+
+local function termcodes(str)
+    return vim.api.nvim_replace_termcodes(str, true, true, true)
+end
 
 local local_mappings = function()
     -- Don't copy the replaced text after pasting in visual mode
@@ -29,17 +33,17 @@ local local_mappings = function()
 
     -- Toggle top/center/bottom
     map_wrapper(
-      "n",
-      'zz',
-      [[(winline() == (winheight (0) + 1)/ 2) ?  'zt' : (winline() == 1)? 'zb' : 'zz']],
-      { expr = true }
+        "n",
+        "zz",
+        [[(winline() == (winheight (0) + 1)/ 2) ?  'zt' : (winline() == 1)? 'zb' : 'zz']],
+        { expr = true }
     )
 
     -- use ESC to turn off search highlighting
     map_wrapper("n", "<Esc>", ":noh <CR>")
 
     -- Map Q to replay q register
-    map_wrapper("n", 'Q', '@q')
+    map_wrapper("n", "Q", "@q")
 
     -- center cursor when moving (goto_definition)
 
@@ -57,17 +61,14 @@ local local_mappings = function()
     -- cmd mode nav
     --map_wrapper("c", "<C-a>", "<Home>")
     --map_wrapper("c", "<C-e>", "<End>")
-    vim.cmd [[cmap <C-a> <Home>]]
-    vim.cmd [[cmap <C-e> <End>]]
+    vim.cmd([[cmap <C-a> <Home>]])
+    vim.cmd([[cmap <C-e> <End>]])
     --map_wrapper("c", "<C-j>", [[wildmenumode() ? "\<Tab>" : "\<c-j>"]], {expr = true})
     --map_wrapper("c", "<C-k>", [[wildmenumode() ? "\<S-Tab>" : "\<c-k>"]], {expr = true})
-    vim.cmd [[cmap <expr> <C-j> wildmenumode() ? "\<Tab>" : "\<c-j>"]]
-    vim.cmd [[cmap <expr> <C-k> wildmenumode() ? "\<S-Tab>" : "\<c-k>"]]
-    vim.cmd [[cmap <expr> <C-h> wildmenumode() ? "\<Up>" : "\<c-h>"]]
-    vim.cmd [[cmap <expr> <C-l> wildmenumode() ? "\<Down>\<Tab>" : "\<c-l>"]]
-
-    -- close  buffer
-    map_wrapper("n", "<leader>X", "<Cmd>lua require('as.utils.core').close_buffer() <CR>")
+    vim.cmd([[cmap <expr> <C-j> wildmenumode() ? "\<Tab>" : "\<c-j>"]])
+    vim.cmd([[cmap <expr> <C-k> wildmenumode() ? "\<S-Tab>" : "\<c-k>"]])
+    vim.cmd([[cmap <expr> <C-h> wildmenumode() ? "\<Up>" : "\<c-h>"]])
+    vim.cmd([[cmap <expr> <C-l> wildmenumode() ? "\<Down>\<Tab>" : "\<c-l>"]])
 
     -- copy whole file content
     --map_wrapper("n", "<C-a>", ":%y+ <CR>")
@@ -76,30 +77,18 @@ local local_mappings = function()
     map_wrapper("v", "<C-c>", '"+y')
     map_wrapper("n", "<C-c>", '"+yy') -- copy curent line in normal mode
 
-    -- new buffer
-    map_wrapper("n", "<leader>nb", ":enew <CR>")
-
-    -- new tabs
-    map_wrapper("n", "<leader>nt", ":tabnew <CR>")
-
-    -- toggle numbers
-    map_wrapper("n", "<leader>nu", ":set nu! <CR>")
-
     -- toggle relative numbers
     --map("n", maps.misc.relative_line_number_toggle, ":set rnu! <CR>")
 
-    -- ctrl + s to save file
-    map_wrapper("n", "<C-s>", ":w <CR>")
-
     -- Evaluates whether there is a fold on the current line if so unfold it else return a normal space
-    map_wrapper("", '<space><space>', [[@=(foldlevel('.')?'za':"\<Space>")<CR>]])
+    map_wrapper("", "<space><space>", [[@=(foldlevel('.')?'za':"\<Space>")<CR>]])
 
     -- toggle paste mode
     --map_wrapper("n", ";i", ":set paste! <CR>")
 
     -- Plugin search cmd lines
     --map_wrapper('c', [[<C-R>]], '<Plug>(TelescopeFuzzyCommandSearch)', {noremap = true})
-    vim.cmd [[cmap <C-\> <Plug>(TelescopeFuzzyCommandSearch)]]
+    vim.cmd([[cmap <C-\> <Plug>(TelescopeFuzzyCommandSearch)]])
 end
 
 local neovide_mappings = function()
@@ -112,8 +101,8 @@ local neovide_mappings = function()
     map_wrapper("n", "<D-s>", ":w <CR>")
     map_wrapper("v", "<D-c>", '"+y')
     map_wrapper("i", "<D-v>", '<c-o>"+p')
-    vim.cmd [[cmap <D-v> <C-r>*]]
-    map_wrapper({ "n", "i"}, "<D-/>", "<cmd>lua require('Comment.api').toggle_current_linewise() <CR>")
+    vim.cmd([[cmap <D-v> <C-r>*]])
+    map_wrapper({ "n", "i" }, "<D-/>", "<cmd>lua require('Comment.api').toggle_current_linewise() <CR>")
 end
 
 M.do_misc_mapping = function()
@@ -121,7 +110,21 @@ M.do_misc_mapping = function()
     neovide_mappings()
 end
 
-M.general = {
+M.general_mappings = {
+    ["<leader>X"] = {
+        "<Cmd>lua require('as.utils.core').close_buffer() <CR>",
+        "Close Buffer ",
+    },
+    ["<C-s>"] = { "<cmd> w <CR>", "Save File ﬚" },
+    ["<leader>nb"] = { "<cmd>enew <CR>", "New Buffer 烙" },
+    ["<leader>nt"] = { "<cmd>tabnew <CR>", "New Tab 烙" },
+    ["<leader>nu"] = { "<cmd>set nu! <CR>", "Toggle Line Number " },
+    ["<Esc><Esc>"] = {
+        termcodes("<C-\\><C-N>"),
+        "Escape Terminal Mode ",
+        mode = "t",
+        noremap = false,
+    },
 }
 
 -- Plugins
@@ -129,7 +132,7 @@ M.bufferline = {
     ["<leader><tab>"] = { "<Cmd>BufferLineCycleNext<CR>", "Bufferline: Next" },
     ["<S-tab>"] = { "<Cmd>BufferLineCyclePrev<CR>", "Bufferline: Previous" },
     ["<leader>ns"] = { "<Cmd>BufferLinePick<CR>", "Bufferline: Pick Buffer" },
-    ["<leader>nx"] = { "<Cmd>BufferLinePickClose<CR>", "Bufferline: Delete Buffer" }
+    ["<leader>nx"] = { "<Cmd>BufferLinePickClose<CR>", "Bufferline: Delete Buffer" },
     --["gD"] = {"<Cmd>BufferLinePickClose<CR>", "bufferline: delete buffer"},
     --["gb"] = {"<Cmd>BufferLinePick<CR>", "bufferline: pick buffer"},
     --["[b"] = {"<Cmd>BufferLineMoveNext<CR>", "bufferline: move next"},
@@ -148,16 +151,7 @@ M.comment = {
         mode = "v",
         noremap = false,
     },
-
-    --map("v", m, ":lua require('Comment.api').toggle_linewise_op(vim.fn.visualmode())<CR>")
 }
-
---M.comment_v = {
---    ["<leader>/"] = {
---        function() require('Comment.api').toggle_linewise_op(vim.fn.visualmode()) end,
---        "Comment: Toggle"
---    }
---}
 
 M.dashboard = {
     ["<leader>bm"] = { "<Cmd>DashboardJumpMarks <CR>", "Dashboard: Bookmark" },
@@ -246,8 +240,49 @@ M.lsp = {
 }
 
 M.nvimtree = {
-    ["<leader><C-n>"] = { "<cmd>NvimTreeToggle <CR>", "Nvim-Tree: Toggle" },
-    ["<leader>e"] = { "<cmd>NvimTreeFocus <CR>", "vim-Tree: Focus" },
+    ["<leader><C-n>"] = { "<cmd>NvimTreeToggle <CR>", "NvimTree: Toggle " },
+    ["<leader>e"] = { "<cmd>NvimTreeFocus <CR>", "NvimTree: Focus " },
+}
+
+M.nvterm = {
+    ["<A-i>"] = {
+        "<cmd>lua require('nvterm.terminal').toggle('float') <CR>",
+        "Toggle Floating Term ",
+        mode = "t",
+        noremap = false,
+    },
+    ["<A-h>"] = {
+        "<cmd>lua require('nvterm.terminal').toggle('horizontal') <CR>",
+        "Toggle Horizontal Term ",
+        mode = "t",
+        noremap = false,
+    },
+    ["<A-v>"] = {
+        "<cmd>lua require('nvterm.terminal').toggle('vertical') <CR>",
+        "Toggle Vertical Term ",
+        mode = "t",
+        noremap = false,
+    },
+    ["<a-i>"] = {
+        "<cmd>lua require('nvterm.terminal').toggle('float') <CR>",
+        "Toggle Floating Term ",
+    },
+    ["<a-h>"] = {
+        "<cmd>lua require('nvterm.terminal').toggle('horizontal') <CR>",
+        "Toggle Horizontal Term ",
+    },
+    ["<a-v>"] = {
+        "<cmd>lua require('nvterm.terminal').toggle('vertical') <CR>",
+        "Toggle Vertical Term ",
+    },
+    ["<leader>nh"] = {
+        "<cmd>lua require('nvterm.terminal').new('horizontal') <CR>",
+        "New Horizontal Term ",
+    },
+    ["<leader>nv"] = {
+        "<cmd>lua require('nvterm.terminal').new('vertical') <CR>",
+        "New Vertical Term ",
+    },
 }
 
 M.telescope = {
@@ -266,7 +301,7 @@ M.telescope = {
     ["<leader>fg"] = { "<cmd>lua require('telescope.builtin').git_files() <CR>", "Telescope: Git Files" },
     ["<leader>fh"] = { "<cmd>lua require('telescope').extensions.frecency.frecency() <CR>", "Telescope: Frecency" },
     ["<leader>fr"] = { "<cmd>lua require('telescope.builtin').resume() <CR>", "Telescope: Resume" },
-    ["<leader>f?"] = { "<cmd>lua require('telescope.builtin').help_tags() <CR>", "Telescope: Help Tags"},
+    ["<leader>f?"] = { "<cmd>lua require('telescope.builtin').help_tags() <CR>", "Telescope: Help Tags" },
     ["<leader>fw"] = { "<cmd>lua require('telescope.builtin').live_grep() <CR>", "Telescope: Grep" },
     ["<leader>fs"] = { "<cmd>lua require('telescope.builtin').treesitter() <CR>", "Telescope: Treesitter" },
     ["<leader>fk"] = { "<cmd>lua require('telescope.builtin').keymaps() <CR>", "Telescope: Keymaps" },
@@ -306,7 +341,7 @@ M.telescope = {
             end,
             "windows",
         },
-    }
+    },
 }
 
 M.undotree = {
