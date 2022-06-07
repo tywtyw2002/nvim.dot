@@ -32,6 +32,12 @@ function P.conf(name)
     return "require" .. fmt("('as.conf.other').%s()", name)
 end
 
+function P.lazy_load(plugin)
+    vim.defer_fn(function()
+        require("packer").loader(plugin)
+    end, 0)
+end
+
 -- packer bootstrap
 function P.bootstrap_packer()
     local packer_path = vim.fn.stdpath("data") .. "/site/pack/packer/opt/packer.nvim"
@@ -165,9 +171,8 @@ packer.startup({
         -- nvim-lsp-installer
         use({
             "williamboman/nvim-lsp-installer",
-            requires = "nvim-lspconfig",
-            config = P.load_conf_as("lspconfig", "lsp_installer"),
-            --setup = P.load_conf_as("lspconfig", "lsp_installer_setup"),
+            opt = true,
+            setup = P.load_conf_as("lspconfig", "lsp_installer"),
         })
 
         -- null-ls

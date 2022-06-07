@@ -195,11 +195,24 @@ end
 as.lsp.servers = {
     gopls = true,
     pyright = true,
+    jedi_language_server = true,
     yamlls = true,
     --bashls = true,
     --jsonls = LSP_jsonls,
     sumneko_lua = LSP_sumneko_lua,
 }
+
+local function get_wanted_lsp()
+    local r = {}
+
+    for k, v in pairs(as.lsp.servers) do
+        if v then
+            table.insert(r, k)
+        end
+    end
+
+    return r
+end
 
 ---Logic to (re)start installed language servers for use initialising lsps
 ---and restarting them on installing new ones
@@ -223,25 +236,23 @@ M.lsp_config = function()
     --    server:setup(as.lsp.get_server_config(server))
     --    vim.cmd([[ do User LspAttachBuffers ]])
     --end)
+    M.lsp_installer_init()
 end
 
 M.lsp_installer = function()
-    local lsp_installer_servers = require("nvim-lsp-installer.servers")
-    for name, _ in pairs(as.lsp.servers) do
-        ---@type boolean, table|string
-        local ok, server = lsp_installer_servers.get_server(name)
-        if ok then
-            if not server:is_installed() then
-                server:install()
-            end
-        end
-    end
-    M.lsp_installer_setup()
+    vim.defer_fn(function()
+        require("packer").loader("nvim-lsp-installer")
+    end, 0)
+    -- reload the current file so lsp actually starts for it
+    vim.defer_fn(function()
+        vim.cmd('if &ft == "packer" | echo "" | else | silent! e %')
+    end, 0)
 end
 
-M.lsp_installer_setup = function()
+M.lsp_installer_init = function()
     local options = {
-        automatic_installation = true,
+        automatic_installation = false,
+        ensure_installed = get_wanted_lsp(),
         ui = {
             server_installed = " ",
             server_pending = " ",
@@ -258,6 +269,7 @@ M.lsp_installer_setup = function()
         },
         max_concurrent_installers = 20,
     }
+
     local lsp_installer = require("nvim-lsp-installer")
     lsp_installer.setup(options)
 end
