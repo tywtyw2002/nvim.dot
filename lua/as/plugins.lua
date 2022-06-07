@@ -80,12 +80,15 @@ packer.init({
             return require("packer.util").float({ border = "single" })
         end,
         prompt_border = "single",
+        working_sym = " ﲊ",
+        error_sym = "✗ ",
+        done_sym = " ",
+        removed_sym = " ",
+        moved_sym = "",
     },
-    --git = {
-    --   clone_timeout = 6000, -- seconds
-    --},
     auto_clean = true,
     compile_on_sync = true,
+    git = { clone_timeout = 6000 },
     --log = { level = 'debug'}
 })
 
@@ -100,10 +103,17 @@ packer.startup({
 
         use_rocks("luautf8")
 
+        -- 'nvim-lua/plenary.nvim'
+        use({ "nvim-lua/plenary.nvim" })
+
+        -- startup cache
+        use("lewis6991/impatient.nvim")
+
         -- theme
         use({
-            "NvChad/nvim-base16.lua",
-            after = "packer.nvim",
+            "NvChad/base46",
+            after = "plenary.nvim",
+            commit = "f39d712a915b837fe34bb74ab880a1879fc6eaf1",
             config = function()
                 require("as.colors").init()
             end,
@@ -122,16 +132,13 @@ packer.startup({
         -- nvim-web-devicons
         use({
             "kyazdani42/nvim-web-devicons",
-            after = "nvim-base16.lua",
+            after = "base46",
         })
 
         use({
             "folke/which-key.nvim",
             config = P.load_conf_as("whichkey"),
         })
-
-        -- 'nvim-lua/plenary.nvim'
-        use({ "nvim-lua/plenary.nvim" })
 
         -- 'lukas-reineke/indent-blankline.nvim'
         use({
@@ -143,6 +150,7 @@ packer.startup({
         -- Tree
         use({
             "kyazdani42/nvim-tree.lua",
+            ft = 'alpha',
             config = P.load_conf_as("nvim-tree", "config"),
             --requires = "nvim-web-devicons",
             cmd = { "NvimTreeToggle", "NvimTreeFocus" },
@@ -168,6 +176,7 @@ packer.startup({
             "williamboman/nvim-lsp-installer",
             requires = "nvim-lspconfig",
             config = P.load_conf_as("lspconfig", "lsp_installer"),
+            --setup = P.load_conf_as("lspconfig", "lsp_installer_setup"),
         })
 
         -- null-ls
@@ -202,7 +211,7 @@ packer.startup({
         use({
             "rafamadriz/friendly-snippets",
             module = "cmp_nvim_lsp",
-            event = "InsertCharPre",
+            event = "InsertEnter",
         })
 
         -- CMP
@@ -278,6 +287,7 @@ packer.startup({
         -- Tab bufferline
         use({
             "akinsho/bufferline.nvim",
+            branch = "main",
             after = "nvim-web-devicons",
             config = P.load_conf_as("bufferline", "config"),
             setup = P.load_conf_as("bufferline", "setup"),
@@ -288,6 +298,12 @@ packer.startup({
             "feline-nvim/feline.nvim",
             after = "nvim-web-devicons",
             config = P.load_conf_as("feline"),
+        })
+
+        use({
+            "SmiteshP/nvim-gps",
+            event = "CursorMoved",
+            config = P.load_conf_as("gps"),
         })
 
         -----------------------------------------------------------------------------//
@@ -317,16 +333,24 @@ packer.startup({
         use({
             "numToStr/Comment.nvim",
             module = "Comment",
-            keys = { "gcc" },
+            keys = { "gc", "gb" },
             config = P.conf("comment"),
             setup = 'require("which-key").register(require("as.mappings").comment)',
         })
 
         -- tail space
+        --use({
+        --    "bronson/vim-trailing-whitespace",
+        --    disable=true,
+        --    --config = P.conf("trailspace")
+        --    config = 'require("which-key").register(require("as.mappings").trailspace)',
+        --})
+
+        -- mini
         use({
-            "bronson/vim-trailing-whitespace",
-            --config = P.conf("trailspace")
-            config = 'require("which-key").register(require("as.mappings").trailspace)',
+            "echasnovski/mini.nvim",
+            config = P.conf("trailspace"),
+            setup = 'require("which-key").register(require("as.mappings").trailspace)'
         })
 
         use("andymass/vim-matchup")
@@ -385,9 +409,6 @@ packer.startup({
         --use 'leafgarland/typescript-vim'
         --use 'peitalin/vim-jsx-typescript'
         use("mtdl9/vim-log-highlighting")
-
-        -- startup cache
-        use("lewis6991/impatient.nvim")
 
         -- speed profiling
         -- dstein64/vim-startuptime

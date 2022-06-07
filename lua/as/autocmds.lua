@@ -36,6 +36,7 @@ augroup _python
   autocmd FileType python set shiftwidth=4
   autocmd FileType python set softtabstop=4
   autocmd FileType python set textwidth=79
+  autocmd FileType python set colorcolumn=79
 ]])
 
 vim.cmd([[
@@ -63,6 +64,21 @@ augroup _yaml
   autocmd FileType yaml set softtabstop=2
 augroup END
 ]])
+
+--local autocmd = vim.api.nvim_create_autocmd
+--autocmd("FileType", {
+--   pattern = "alpha",
+--   callback = function()
+--      vim.opt.laststatus = 0
+--   end,
+--})
+
+--autocmd("BufUnload", {
+--   buffer = 0,
+--   callback = function()
+--      vim.opt.laststatus = 3
+--   end,
+--})
 
 --vim.cmd [[ autocmd CursorHold * echon '' ]]
 local function clear_commandline()

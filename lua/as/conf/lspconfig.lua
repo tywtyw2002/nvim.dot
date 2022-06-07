@@ -53,69 +53,60 @@ local function setup_autocommands(client, _)
     --end
 end
 
------------------------------------------------------------------------------//
--- Mappings
------------------------------------------------------------------------------//
+vim.lsp.buf.rename = {
+    float = function()
+        local currName = vim.fn.expand("<cword>")
 
------Setup mapping when an lsp attaches to a buffer
------@param client table lsp client
---local function setup_mappings(client)
---    local maps = {
---        n = {
---            ["<leader>rf"] = { vim.lsp.buf.formatting, "lsp: format buffer" },
---            ["gi"] = "lsp: implementation",
---            ["gd"] = { vim.lsp.buf.definition, "lsp: definition" },
---            ["gr"] = { vim.lsp.buf.references, "lsp: references" },
---            ["gI"] = { vim.lsp.buf.incoming_calls, "lsp: incoming calls" },
---            ["K"] = { vim.lsp.buf.hover, "lsp: hover" },
---        },
---        x = {},
---    }
+        local win = require("plenary.popup").create("  ", {
+            title = currName,
+            style = "minimal",
+            borderchars = { "─", "│", "─", "│", "╭", "╮", "╯", "╰" },
+            relative = "cursor",
+            borderhighlight = "RenamerBorder",
+            titlehighlight = "RenamerTitle",
+            focusable = true,
+            width = 25,
+            height = 1,
+            line = "cursor+2",
+            col = "cursor-1",
+        })
 
---    maps.n["]c"] = {
---        function()
---            vim.diagnostic.goto_prev({
---                float = {
---                    border = "rounded",
---                    focusable = false,
---                    source = "always",
---                },
---            })
---        end,
---        "lsp: go to prev diagnostic",
---    }
---    maps.n["[c"] = {
---        function()
---            vim.diagnostic.goto_next({
---                float = {
---                    border = "rounded",
---                    focusable = false,
---                    source = "always",
---                },
---            })
---        end,
---        "lsp: go to next diagnostic",
---    }
+        local map_opts = { noremap = true, silent = true }
 
---    if client.resolved_capabilities.implementation then
---        maps.n["gi"] = { vim.lsp.buf.implementation, "lsp: impementation" }
---    end
+        vim.cmd("startinsert")
 
---    if client.resolved_capabilities.type_definition then
---        maps.n["<leader>gd"] = { vim.lsp.buf.type_definition, "lsp: go to type definition" }
---    end
+        vim.api.nvim_buf_set_keymap(0, "i", "<Esc>", "<cmd>stopinsert | q!<CR>", map_opts)
+        vim.api.nvim_buf_set_keymap(0, "n", "<Esc>", "<cmd>stopinsert | q!<CR>", map_opts)
 
---    maps.n["<leader>ca"] = { vim.lsp.buf.code_action, "lsp: code action" }
---    maps.x["<leader>ca"] = { "<esc><Cmd>lua vim.lsp.buf.range_code_action()<CR>", "lsp: code action" }
+        vim.api.nvim_buf_set_keymap(
+            0,
+            "i",
+            "<CR>",
+            "<cmd>stopinsert | lua vim.lsp.buf.rename.apply(" .. currName .. "," .. win .. ")<CR>",
+            map_opts
+        )
 
---    if client.supports_method("textDocument/rename") then
---        maps.n["<leader>rn"] = { vim.lsp.buf.rename, "lsp: rename" }
---    end
+        vim.api.nvim_buf_set_keymap(
+            0,
+            "n",
+            "<CR>",
+            "<cmd>stopinsert | lua vim.lsp.buf.rename.apply(" .. currName .. "," .. win .. ")<CR>",
+            map_opts
+        )
+    end,
 
---    for mode, value in pairs(maps) do
---        require("which-key").register(value, { buffer = 0, mode = mode })
---    end
---end
+    apply = function(curr, win)
+        local newName = vim.trim(vim.fn.getline("."))
+        vim.api.nvim_win_close(win, true)
+
+        if #newName > 0 and newName ~= curr then
+            local params = vim.lsp.util.make_position_params()
+            params.newName = newName
+
+            vim.lsp.buf_request(0, "textDocument/rename", params)
+        end
+    end,
+}
 
 function as.lsp.tagfunc(pattern, flags)
     if flags ~= "c" then
@@ -143,7 +134,7 @@ function as.lsp.on_attach(client, bufnr)
     setup_autocommands(client, bufnr)
     --setup_mappings(client)
 
-    require("which-key").register(require('as.mappings').lsp)
+    require("which-key").register(require("as.mappings").lsp)
 
     if client.resolved_capabilities.goto_definition then
         vim.bo[bufnr].tagfunc = "v:lua.as.lsp.tagfunc"
@@ -227,11 +218,11 @@ function as.lsp.get_server_config(server)
 end
 
 M.lsp_config = function()
-    local lsp_installer = require("nvim-lsp-installer")
-    lsp_installer.on_server_ready(function(server)
-        server:setup(as.lsp.get_server_config(server))
-        vim.cmd([[ do User LspAttachBuffers ]])
-    end)
+    --local lsp_installer = require("nvim-lsp-installer")
+    --lsp_installer.on_server_ready(function(server)
+    --    server:setup(as.lsp.get_server_config(server))
+    --    vim.cmd([[ do User LspAttachBuffers ]])
+    --end)
 end
 
 M.lsp_installer = function()
@@ -245,6 +236,30 @@ M.lsp_installer = function()
             end
         end
     end
+    M.lsp_installer_setup()
+end
+
+M.lsp_installer_setup = function()
+    local options = {
+        automatic_installation = true,
+        ui = {
+            server_installed = " ",
+            server_pending = " ",
+            server_uninstalled = " ﮊ",
+        },
+        keymaps = {
+            toggle_server_expand = "<CR>",
+            install_server = "i",
+            update_server = "u",
+            check_server_version = "c",
+            update_all_servers = "U",
+            check_outdated_servers = "C",
+            uninstall_server = "X",
+        },
+        max_concurrent_installers = 20,
+    }
+    local lsp_installer = require("nvim-lsp-installer")
+    lsp_installer.setup(options)
 end
 
 M.null_ls = function()

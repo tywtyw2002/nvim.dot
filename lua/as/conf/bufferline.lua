@@ -1,8 +1,8 @@
 local M = {}
 
-local default = {
-    colors = require("as.colors").get(),
-}
+--local default = {
+--    colors = require("as.colors").get(),
+--}
 
 default = {
     options = {
@@ -11,8 +11,8 @@ default = {
         modified_icon = "",
         close_icon = "",
         show_close_icon = true,
-        left_trunc_marker = "",
-        right_trunc_marker = "",
+        left_trunc_marker = " ",
+        right_trunc_marker = " ",
         max_name_length = 14,
         max_prefix_length = 13,
         tab_size = 20,
@@ -41,107 +41,13 @@ default = {
             return true
         end,
     },
-
-    highlights = {
-        background = {
-            guifg = default.colors.grey_fg,
-            guibg = default.colors.black2,
-        },
-
-        -- buffers
-        buffer_selected = {
-            guifg = default.colors.white,
-            guibg = default.colors.black,
-            gui = "bold",
-        },
-        buffer_visible = {
-            guifg = default.colors.light_grey,
-            guibg = default.colors.black2,
-        },
-
-        -- for diagnostics = "nvim_lsp"
-        error = {
-            guifg = default.colors.light_grey,
-            guibg = default.colors.black2,
-        },
-        error_diagnostic = {
-            guifg = default.colors.light_grey,
-            guibg = default.colors.black2,
-        },
-
-        -- close buttons
-        close_button = {
-            guifg = default.colors.light_grey,
-            guibg = default.colors.black2,
-        },
-        close_button_visible = {
-            guifg = default.colors.light_grey,
-            guibg = default.colors.black2,
-        },
-        close_button_selected = {
-            guifg = default.colors.red,
-            guibg = default.colors.black,
-        },
-        fill = {
-            guifg = default.colors.grey_fg,
-            guibg = default.colors.black2,
-        },
-        indicator_selected = {
-            guifg = default.colors.black,
-            guibg = default.colors.black,
-        },
-
-        -- modified
-        modified = {
-            guifg = default.colors.red,
-            guibg = default.colors.black2,
-        },
-        modified_visible = {
-            guifg = default.colors.red,
-            guibg = default.colors.black2,
-        },
-        modified_selected = {
-            guifg = default.colors.green,
-            guibg = default.colors.black,
-        },
-
-        -- separators
-        separator = {
-            guifg = default.colors.black2,
-            guibg = default.colors.black2,
-        },
-        separator_visible = {
-            guifg = default.colors.black2,
-            guibg = default.colors.black2,
-        },
-        separator_selected = {
-            guifg = default.colors.black2,
-            guibg = default.colors.black2,
-        },
-
-        -- tabs
-        tab = {
-            guifg = default.colors.light_grey,
-            guibg = default.colors.one_bg3,
-        },
-        tab_selected = {
-            guifg = default.colors.black2,
-            guibg = default.colors.nord_blue,
-        },
-        tab_close = {
-            guifg = default.colors.red,
-            guibg = default.colors.black,
-        },
-    },
 }
 
 
 M.config = function()
     local bufferline = require("bufferline")
 
-    bufferline.setup({
-        bufferline.setup(default),
-    })
+    bufferline.setup(default)
 end
 
 M.setup = function()

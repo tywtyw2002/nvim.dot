@@ -32,23 +32,56 @@ local icons = {
     Event = "",
     Operator = "",
     TypeParameter = "",
+    Table = " ",
+    Object = "",
+    Tag = " ",
+    Array = " ",
+    Boolean = "蘒",
+    Number = "",
+    String = "",
+    Calendar = " ",
+    Watch = "",
 }
 
+local function border(hl_name)
+   return {
+      { "╭", hl_name },
+      { "─", hl_name },
+      { "╮", hl_name },
+      { "│", hl_name },
+      { "╯", hl_name },
+      { "─", hl_name },
+      { "╰", hl_name },
+      { "│", hl_name },
+   }
+end
+
+local cmp_window = require "cmp.utils.window"
+
+cmp_window.info_ = cmp_window.info
+cmp_window.info = function(self)
+   local info = self:info_()
+   info.scrollable = false
+   return info
+end
+
 local default = {
+    window = {
+        completion = {
+            border = border "CmpBorder",
+        },
+        documentation = {
+            border = border "CmpDocBorder",
+        },
+    },
     snippet = {
         expand = function(args)
             require("luasnip").lsp_expand(args.body)
         end,
     },
     formatting = {
-        format = function(entry, vim_item)
+        format = function(_, vim_item)
             vim_item.kind = string.format("%s %s", icons[vim_item.kind], vim_item.kind)
-
-            vim_item.menu = ({
-                nvim_lsp = "[LSP]",
-                nvim_lua = "[Lua]",
-                buffer = "[BUF]",
-            })[entry.source.name]
 
             return vim_item
         end,
@@ -61,7 +94,7 @@ local default = {
         ["<C-Space>"] = cmp.mapping.complete(),
         ["<C-e>"] = cmp.mapping.close(),
         ["<CR>"] = cmp.mapping.confirm({
-            behavior = cmp.ConfirmBehavior.Replace,
+            behavior = cmp.ConfirmBehavior.Insert,
             select = true,
         }),
         ["<Tab>"] = cmp.mapping(function(fallback)
@@ -84,8 +117,8 @@ local default = {
         end, { "i", "s" }),
     },
     sources = {
-        { name = "nvim_lsp" },
         { name = "luasnip" },
+        { name = "nvim_lsp" },
         { name = "buffer" },
         { name = "nvim_lua" },
         { name = "path" },

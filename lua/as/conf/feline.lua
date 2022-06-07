@@ -4,12 +4,15 @@ if not present then
     return
 end
 
+local colors = require("base46").get_colors "base_30"
+
 local default = {
-    colors = require("as.colors").get(),
     lsp = require("feline.providers.lsp"),
     lsp_severity = vim.diagnostic.severity,
     --config = require("core.utils").load_config().plugins.options.statusline,
 }
+
+default.colors = colors
 default.icon_styles = {
     default = {
         left = "",
@@ -61,6 +64,29 @@ default.shortline = true
 -- Initialize the components table
 default.components = {
     active = {},
+}
+
+default.mode_colors = {
+    ["n"] = { "NORMAL", default.colors.red },
+    ["no"] = { "N-PENDING", default.colors.red },
+    ["i"] = { "INSERT", default.colors.dark_purple },
+    ["ic"] = { "INSERT", default.colors.dark_purple },
+    ["t"] = { "TERMINAL", default.colors.green },
+    ["v"] = { "VISUAL", default.colors.cyan },
+    ["V"] = { "V-LINE", default.colors.cyan },
+    [""] = { "V-BLOCK", default.colors.cyan },
+    ["R"] = { "REPLACE", default.colors.orange },
+    ["Rv"] = { "V-REPLACE", default.colors.orange },
+    ["s"] = { "SELECT", default.colors.nord_blue },
+    ["S"] = { "S-LINE", default.colors.nord_blue },
+    [""] = { "S-BLOCK", default.colors.nord_blue },
+    ["c"] = { "COMMAND", default.colors.pink },
+    ["cv"] = { "COMMAND", default.colors.pink },
+    ["ce"] = { "COMMAND", default.colors.pink },
+    ["r"] = { "PROMPT", default.colors.teal },
+    ["rm"] = { "MORE", default.colors.teal },
+    ["r?"] = { "CONFIRM", default.colors.teal },
+    ["!"] = { "SHELL", default.colors.green },
 }
 
 default.main_icon = {
@@ -208,6 +234,35 @@ default.diagnostic = {
     },
 }
 
+default.nvim_gps = {
+   provider = function()
+      -- nvim-gps loads at cursorMoved so need to handle this
+      local gps_loaded, gps = pcall(require, "nvim-gps")
+
+      if not gps_loaded then
+         return
+      end
+
+      return " " .. gps.get_location()
+   end,
+
+   enabled = function()
+      local gps_loaded, gps = pcall(require, "nvim-gps")
+
+      if not gps_loaded then
+         return false
+      end
+
+      return gps.is_available()
+   end,
+
+    hl = {
+        fg = default.colors.purple,
+        bg = default.colors.statusline_bg,
+    },
+}
+
+
 default.lsp_progress = {
     provider = function()
         local Lsp = vim.lsp.util.get_progress_messages()[1]
@@ -258,29 +313,6 @@ default.lsp_icon = {
         return vim.api.nvim_win_get_width(tonumber(winid) or 0) > 70
     end,
     hl = { fg = default.colors.grey_fg2, bg = default.colors.statusline_bg },
-}
-
-default.mode_colors = {
-    ["n"] = { "NORMAL", default.colors.red },
-    ["no"] = { "N-PENDING", default.colors.red },
-    ["i"] = { "INSERT", default.colors.dark_purple },
-    ["ic"] = { "INSERT", default.colors.dark_purple },
-    ["t"] = { "TERMINAL", default.colors.green },
-    ["v"] = { "VISUAL", default.colors.cyan },
-    ["V"] = { "V-LINE", default.colors.cyan },
-    [""] = { "V-BLOCK", default.colors.cyan },
-    ["R"] = { "REPLACE", default.colors.orange },
-    ["Rv"] = { "V-REPLACE", default.colors.orange },
-    ["s"] = { "SELECT", default.colors.nord_blue },
-    ["S"] = { "S-LINE", default.colors.nord_blue },
-    [""] = { "S-BLOCK", default.colors.nord_blue },
-    ["c"] = { "COMMAND", default.colors.pink },
-    ["cv"] = { "COMMAND", default.colors.pink },
-    ["ce"] = { "COMMAND", default.colors.pink },
-    ["r"] = { "PROMPT", default.colors.teal },
-    ["rm"] = { "MORE", default.colors.teal },
-    ["r?"] = { "CONFIRM", default.colors.teal },
-    ["!"] = { "SHELL", default.colors.green },
 }
 
 default.chad_mode_hl = function()
@@ -405,6 +437,7 @@ return function()
     add_table(default.left, default.diagnostic.hint)
     add_table(default.left, default.diagnostic.info)
 
+    add_table(default.middle, default.nvim_gps)
     add_table(default.middle, default.lsp_progress)
 
     -- right

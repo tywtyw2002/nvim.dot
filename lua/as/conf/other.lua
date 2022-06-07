@@ -138,8 +138,7 @@ M.luasnip = function()
         updateevents = "TextChanged,TextChangedI",
     }
     luasnip.config.set_config(default)
-    require("luasnip/loaders/from_vscode").load({ paths = require("as.core_config").luasnip_path })
-    --require("luasnip/loaders/from_vscode").load()
+    require("luasnip.loaders.from_vscode").lazy_load()
 end
 
 M.undotree = function()
@@ -158,6 +157,10 @@ end
 --        [";fs"] = { "<cmd>FixWhitespace<CR>", "Remove Trailing Space." },
 --    })
 --end
+
+M.trailspace = function ()
+    require('mini.trailspace').setup()
+end
 
 M.notify = function()
     local notify = require 'notify'

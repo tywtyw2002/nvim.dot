@@ -4,7 +4,7 @@ local M = {}
 
 local local_mappings = function()
     -- Don't copy the replaced text after pasting in visual mode
-    map_wrapper("v", "p", "p:let @+=@0<CR>")
+    map_wrapper("v", "p", 'p:let @+=@0<CR>:let @"=@0<CR>', { silent = true })
 
     -- don't yank text on cut ( x )
     map_wrapper({ "n", "v" }, "x", '""x')
@@ -22,8 +22,8 @@ local local_mappings = function()
     -- http://www.reddit.com/r/vim/comments/2k4cbr/problem_with_gj_and_gk/
     -- empty mode is same as using :map
     -- also don't use g[j|k] when in operator pending mode, so it doesn't alter d, y or c behaviour
-    map_wrapper("", "j", 'v:count || mode(1)[0:1] == "no" ? "j" : "gj"', { expr = true })
-    map_wrapper("", "k", 'v:count || mode(1)[0:1] == "no" ? "k" : "gk"', { expr = true })
+    map_wrapper({ "n", "x", "o" }, "j", 'v:count || mode(1)[0:1] == "no" ? "j" : "gj"', { expr = true })
+    map_wrapper({ "n", "x", "o" }, "k", 'v:count || mode(1)[0:1] == "no" ? "k" : "gk"', { expr = true })
     map_wrapper("", "<Down>", 'v:count || mode(1)[0:1] == "no" ? "j" : "gj"', { expr = true })
     map_wrapper("", "<Up>", 'v:count || mode(1)[0:1] == "no" ? "k" : "gk"', { expr = true })
 
@@ -67,7 +67,7 @@ local local_mappings = function()
     vim.cmd [[cmap <expr> <C-l> wildmenumode() ? "\<Down>\<Tab>" : "\<c-l>"]]
 
     -- close  buffer
-    map_wrapper("n", "<leader>X", ":lua require('as.utils.core').close_buffer() <CR>")
+    map_wrapper("n", "<leader>X", "<Cmd>lua require('as.utils.core').close_buffer() <CR>")
 
     -- copy whole file content
     --map_wrapper("n", "<C-a>", ":%y+ <CR>")
@@ -110,7 +110,8 @@ local neovide_mappings = function()
     vim.g.neovide_input_use_logo = true
 
     map_wrapper("n", "<D-s>", ":w <CR>")
-    map_wrapper("i", "<D-v>", "<C-r>*")
+    map_wrapper("v", "<D-c>", '"+y')
+    map_wrapper("i", "<D-v>", '<c-o>"+p')
     vim.cmd [[cmap <D-v> <C-r>*]]
     map_wrapper({ "n", "i"}, "<D-/>", "<cmd>lua require('Comment.api').toggle_current_linewise() <CR>")
 end
@@ -119,6 +120,9 @@ M.do_misc_mapping = function()
     local_mappings()
     neovide_mappings()
 end
+
+M.general = {
+}
 
 -- Plugins
 M.bufferline = {
@@ -136,11 +140,11 @@ M.bufferline = {
 M.comment = {
     ["<leader>/"] = {
         "<cmd>lua require('Comment.api').toggle_current_linewise() <CR>",
-        "Comment: Toggle",
+        "Comment: 蘒  Toggle",
     },
     ["<Leader>/"] = {
-        "<cmd>lua require('Comment.api').toggle_current_linewise() <CR>",
-        "Comment: Toggle",
+        "<ESC><cmd>lua require('Comment.api').toggle_linewise_op(vim.fn.visualmode())<CR>",
+        "Comment: 蘒  Toggle",
         mode = "v",
         noremap = false,
     },
@@ -222,7 +226,7 @@ M.lsp = {
         "<cmd>lua vim.lsp.buf.type_definition()<CR>",
         "LSP: Show Type Definition",
     },
-    ["<leader>ra"] = { "<cmd>lua vim.lsp.buf.rename()<CR>", "LSP: Rename" },
+    ["<leader>ra"] = { "<cmd>lua vim.lsp.buf.rename.float()<CR>", "LSP: Rename" },
     ["<leader>ca"] = {
         "<cmd>lua vim.lsp.buf.code_action()<CR>",
         "LSP: Code Action",
@@ -248,41 +252,42 @@ M.nvimtree = {
 
 M.telescope = {
     ["<leader>fb"] = {
-        "<cmd>Telescope buffers <CR>",
+        "<cmd>lua require('telescope.builtin').buffers() <CR>",
         "Telescope: Find Buffer",
     },
     ["<leader>ff"] = {
-        "<cmd>Telescope find_files <CR>",
+        "<cmd>lua require('telescope.builtin').find_files() <CR>",
         "Telescope: Find File",
     },
     ["<leader>fa"] = {
-        "<cmd>Telescope find_files follow=true no_ignore=true hidden=true <CR>",
+        "<cmd>lua require('telescope.builtin').find_files({follow=true, no_ignore=true, hidden=true}) <CR>",
         "Telescope: Find All Files",
     },
-    ["<leader>fg"] = { "<cmd>Telescope git_files <CR>", "Telescope: Git Files" },
-    ["<leader>fh"] = { "<cmd>Telescope frecency <CR>", "Telescope: Frecency" },
-    ["<leader>fr"] = { "<cmd>Telescope resume <CR>", "Telescope: Resume" },
-    ["<leader>f?"] = { "<cmd>Telescope help_tags <CR>", "Telescope: Help Tags"},
-    ["<leader>fw"] = { "<cmd>Telescope live_grep <CR>", "Telescope: Grep" },
-    ["<leader>fs"] = { "<cmd>Telescope treesitter <CR>", "Telescope: Treesitter" },
+    ["<leader>fg"] = { "<cmd>lua require('telescope.builtin').git_files() <CR>", "Telescope: Git Files" },
+    ["<leader>fh"] = { "<cmd>lua require('telescope').extensions.frecency.frecency() <CR>", "Telescope: Frecency" },
+    ["<leader>fr"] = { "<cmd>lua require('telescope.builtin').resume() <CR>", "Telescope: Resume" },
+    ["<leader>f?"] = { "<cmd>lua require('telescope.builtin').help_tags() <CR>", "Telescope: Help Tags"},
+    ["<leader>fw"] = { "<cmd>lua require('telescope.builtin').live_grep() <CR>", "Telescope: Grep" },
+    ["<leader>fs"] = { "<cmd>lua require('telescope.builtin').treesitter() <CR>", "Telescope: Treesitter" },
+    ["<leader>fk"] = { "<cmd>lua require('telescope.builtin').keymaps() <CR>", "Telescope: Keymaps" },
     ["<leader>fo"] = {
-        "<cmd>Telescope oldfiles <CR>",
+        "<cmd>lua require('telescope.builtin').oldfiles() <CR>",
         "Telescope: Old Files",
     },
     ["<leader>gc"] = {
-        "<cmd>Telescope git_commits <CR>",
+        "<cmd>lua require('telescope.builtin').git_commits() <CR>",
         "Telescope: Git Commit",
     },
     ["<leader>gs"] = {
-        "<cmd>Telescope git_status <CR>",
+        "<cmd>lua require('telescope.builtin').git_status() <CR>",
         "Telescope: Git Status",
     },
     ["<leader>gb"] = {
-        "<cmd>Telescope git_branches <CR>",
+        "<cmd>lua require('telescope.builtin').git_branches() <CR>",
         "Telescope: Git Status",
     },
     ["<leader>fz"] = {
-        "<cmd>Telescope builtin<CR>",
+        "<cmd>lua require('telescope.builtin').commands() <CR>",
         "Telescope: Commands",
     },
     ["<leader>ft"] = {
@@ -309,7 +314,7 @@ M.undotree = {
 }
 
 M.trailspace = {
-    [";fs"] = { "<cmd>FixWhitespace<CR>", "Remove Trailing Space." },
+    [";fs"] = { "<cmd>lua MiniTrailspace.trim() <CR>", "Remove Trailing Space." },
 }
 
 M.trouble = {

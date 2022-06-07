@@ -2,9 +2,14 @@ local fn = vim.fn
 local opt = vim.opt
 local g = vim.g
 
-g.nvchad_theme = "tomorrow-night"
+g.nvchad_theme = "tomorrow_night"
+
 --g.nvchad_theme = "gruvchad"
 opt.cul = true -- cursor line
+
+if not vim.g.neovide then
+  g.transparency = true
+end
 
 -- GUI
 g.neovide_transparency = 0.9
@@ -158,6 +163,7 @@ opt.synmaxcol = 1024 -- don't syntax highlight long lines
 -- FIXME: use 'auto:2-4' when the ability to set only a single lsp sign is restored
 --@see: https://github.com/neovim/neovim/issues?q=set_signs
 --opt.signcolumn = 'yes:2'
+opt.colorcolumn = "79"  
 opt.ruler = false
 opt.cmdheight = 1 -- Set command line height to two lines
 opt.showbreak = [[↪ ]] -- Options include -> '…', '↳ ', '→','↪ '
@@ -307,5 +313,30 @@ opt.exrc = true -- Allow project local vimrc files example .nvimrc see :h exrc
 if as.executable 'nvr' then
   vim.env.GIT_EDITOR = "nvr -cc split --remote-wait +'set bufhidden=wipe'"
   vim.env.EDITOR = "nvr -cc split --remote-wait +'set bufhidden=wipe'"
+end
+
+-- Disable Builtin plugins
+local disabled_built_ins = {
+   "2html_plugin",
+   "getscript",
+   "getscriptPlugin",
+   "gzip",
+   "logipat",
+   "netrw",
+   "netrwPlugin",
+   "netrwSettings",
+   "netrwFileHandlers",
+   "matchit",
+   "tar",
+   "tarPlugin",
+   "rrhelper",
+   "spellfile_plugin",
+   "vimball",
+   "vimballPlugin",
+   "zip",
+   "zipPlugin",
+}
+for _, plugin in pairs(disabled_built_ins) do
+   g["loaded_" .. plugin] = 1
 end
 -- vim:foldmethod=marker
