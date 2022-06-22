@@ -35,21 +35,21 @@ local function setup_autocommands(client, _)
     end
     -- disable autoformat!!!
     --if client and client.resolved_capabilities.document_formatting then
-    --  -- format on save
-    --  as.augroup('LspFormat', {
-    --    {
-    --      events = { 'BufWritePre' },
-    --      targets = { '<buffer>' },
-    --      command = function()
-    --        -- BUG: folds are are removed when formatting is done, so we save the current state of the
-    --        -- view and re-apply it manually after formatting the buffer
-    --        -- @see: https://github.com/nvim-treesitter/nvim-treesitter/issues/1424#issuecomment-909181939
-    --        vim.cmd 'mkview!'
-    --        vim.lsp.buf.formatting_sync()
-    --        vim.cmd 'loadview'
-    --      end,
-    --    },
-    --  })
+    --    -- format on save
+    --    as.augroup('LspFormat', {
+    --        {
+    --            events = { 'BufWritePre' },
+    --            targets = { '<buffer>' },
+    --            command = function()
+    --                -- BUG: folds are are removed when formatting is done, so we save the current state of the
+    --                -- view and re-apply it manually after formatting the buffer
+    --                -- @see: https://github.com/nvim-treesitter/nvim-treesitter/issues/1424#issuecomment-909181939
+    --                vim.cmd 'mkview!'
+    --                vim.lsp.buf.formatting_sync()
+    --                vim.cmd 'loadview'
+    --            end,
+    --        },
+    --    })
     --end
 end
 
@@ -108,6 +108,13 @@ vim.lsp.buf.rename = {
     end,
 }
 
+vim.lsp.handlers["textDocument/hover"] = vim.lsp.with(vim.lsp.handlers.hover, {
+   border = "single",
+})
+vim.lsp.handlers["textDocument/signatureHelp"] = vim.lsp.with(vim.lsp.handlers.signature_help, {
+   border = "single",
+})
+
 function as.lsp.tagfunc(pattern, flags)
     if flags ~= "c" then
         return vim.NIL
@@ -156,6 +163,16 @@ local function LSP_sumneko_lua()
     if not ok then
         return {}
     end
+    -- wow lua "/Users/tyw/git/vscode-wow-api/EmmyLua/"
+    local library = {}
+
+    for _, path in ipairs({
+        "/Users/tyw/git/vscode-wow-api/EmmyLua/"
+    }) do
+        if vim.fn.isdirectory(path) ~= 0 then
+            table.insert(library, path)
+        end
+    end
     return lua_dev.setup({
         lspconfig = {
             settings = {
@@ -171,6 +188,11 @@ local function LSP_sumneko_lua()
                             "teardown",
                             "packer_plugins",
                         },
+                    },
+                    workspace = {
+                        library = library,
+                        maxPreload = 100000,
+                        preloadFileSize = 10000,
                     },
                     telemetry = { enable = false },
                     completion = { keywordSnippet = "Replace", callSnippet = "Replace" },
@@ -195,7 +217,33 @@ end
 as.lsp.servers = {
     gopls = true,
     pyright = true,
-    jedi_language_server = true,
+    --jedi_language_server = true,
+    pylsp = {
+        capabilities = {
+            textDocument = {
+                completion = false,
+                definition = false,
+                documentHighlight = false,
+                documentSymbol = false,
+                hover = false,
+                references = false,
+                rename = false,
+                signatureHelp = false,
+            }
+        },
+        settings = {
+            pylsp = {
+                plugins = {
+                    jedi_completion = { enabled = false },
+                    jedi_definition = { enabled = false },
+                    jedi_hover = { enabled = false },
+                    jedi_references = { enabled = false },
+                    jedi_signature_help = { enabled = false },
+                    jedi_symbols = { enabled = false },
+                }
+            }
+        }
+    },
     yamlls = true,
     --bashls = true,
     --jsonls = LSP_jsonls,
@@ -214,6 +262,27 @@ local function get_wanted_lsp()
     return r
 end
 
+
+local capabilities = vim.lsp.protocol.make_client_capabilities()
+
+capabilities.textDocument.completion.completionItem = {
+   documentationFormat = { "markdown", "plaintext" },
+   snippetSupport = true,
+   preselectSupport = true,
+   insertReplaceSupport = true,
+   labelDetailsSupport = true,
+   deprecatedSupport = true,
+   commitCharactersSupport = true,
+   tagSupport = { valueSet = { 1 } },
+   resolveSupport = {
+      properties = {
+         "documentation",
+         "detail",
+         "additionalTextEdits",
+      },
+   },
+}
+
 ---Logic to (re)start installed language servers for use initialising lsps
 ---and restarting them on installing new ones
 function as.lsp.get_server_config(server)
@@ -221,7 +290,7 @@ function as.lsp.get_server_config(server)
     local conf = as.lsp.servers[server.name]
     local conf_type = type(conf)
     local config = conf_type == "table" and conf or conf_type == "function" and conf() or {}
-    config.flags = { debounce_text_changes = 500 }
+    config.flags = config.flags or { debounce_text_changes = 500 }
     config.on_attach = as.lsp.on_attach
     config.capabilities = config.capabilities or vim.lsp.protocol.make_client_capabilities()
     --if nvim_lsp_ok then
@@ -232,11 +301,28 @@ end
 
 M.lsp_config = function()
     --local lsp_installer = require("nvim-lsp-installer")
-    --lsp_installer.on_server_ready(function(server)
-    --    server:setup(as.lsp.get_server_config(server))
-    --    vim.cmd([[ do User LspAttachBuffers ]])
-    --end)
     M.lsp_installer_init()
+
+    local lspconfig = require "lspconfig"
+
+    for lsp, conf in pairs(as.lsp.servers) do
+        local conf_type = type(conf)
+        local config = conf_type == "table" and conf or conf_type == "function" and conf() or {}
+        config.flags = { debounce_text_changes = 500 }
+        config.on_attach = as.lsp.on_attach
+        config.capabilities = config.capabilities or capabilities
+        lspconfig[lsp].setup(config)
+    end
+
+    -- Borders for LspInfo winodw
+    local win = require "lspconfig.ui.windows"
+    local _default_opts = win.default_opts
+
+    win.default_opts = function(options)
+        local opts = _default_opts(options)
+        opts.border = "single"
+        return opts
+    end
 end
 
 M.lsp_installer = function()
@@ -278,7 +364,7 @@ M.null_ls = function()
     local null_ls = require("null-ls")
     -- NOTE: this plugin will break if it's dependencies are not installed
     null_ls.setup({
-        debounce = 150,
+        debounce = 250,
         on_attach = as.lsp.on_attach,
         sources = {
             null_ls.builtins.code_actions.gitsigns,

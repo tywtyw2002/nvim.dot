@@ -7,9 +7,9 @@ g.nvchad_theme = "tomorrow_night"
 --g.nvchad_theme = "gruvchad"
 opt.cul = true -- cursor line
 
-if not vim.g.neovide then
-  g.transparency = true
-end
+--if not vim.g.neovide then
+--  g.transparency = true
+--end
 
 -- GUI
 g.neovide_transparency = 0.9
