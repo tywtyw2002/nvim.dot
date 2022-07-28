@@ -476,6 +476,7 @@ packer.startup({
             config = P.conf("conflict_marker"),
         })
 
+        use "baskerville/vim-sxhkdrc"
         --  "TimUntersberger/neogit",
     end,
     log = { level = "info" },
