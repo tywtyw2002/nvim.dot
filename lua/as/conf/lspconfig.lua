@@ -373,6 +373,8 @@ M.null_ls = function()
                     return as.executable("stylua") and _utils.root_has_file("stylua.toml")
                 end,
             }),
+            null_ls.builtins.formatting.rustfmt,
+            null_ls.builtins.formatting.deno_fmt,
             null_ls.builtins.formatting.prettier.with({
                 filetypes = { "html", "json", "yaml", "graphql", "markdown" },
                 condition = function()
