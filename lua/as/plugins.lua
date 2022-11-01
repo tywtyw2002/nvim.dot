@@ -88,6 +88,9 @@ packer.init({
     auto_clean = true,
     compile_on_sync = true,
     git = { clone_timeout = 6000 },
+    luarocks = {
+        python_cmd = 'python3'
+    }
     --log = { level = 'debug'}
 })
 
@@ -386,7 +389,7 @@ packer.startup({
         -- filetype
         use({ "nathom/filetype.nvim" })
 
-        use({ "folke/lua-dev.nvim" })
+        use({ "folke/neodev.nvim" })
         use("elzr/vim-json")
         use("cespare/vim-toml")
         use("plasticboy/vim-markdown")

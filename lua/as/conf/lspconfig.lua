@@ -159,7 +159,7 @@ end
 ---  NOTE: we return a function here so that the lua dev dependency is not
 --- required till the setup function is called.
 local function LSP_sumneko_lua()
-    local ok, lua_dev = as.safe_require("lua-dev")
+    local ok, lua_dev = as.safe_require("neodev")
     if not ok then
         return {}
     end
