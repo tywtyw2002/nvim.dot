@@ -166,16 +166,17 @@ packer.startup({
         -----------------------------------------------------------------------------//
         -- LSP
         -----------------------------------------------------------------------------//
+        -- nvim-lsp-installer
+        use({
+            "williamboman/mason.nvim",
+            --opt = true,
+            cmd = { "Mason", "MasonInstall", "MasonInstallAll", "MasonUninstall", "MasonUninstallAll", "MasonLog" },
+            config = P.load_conf_as("lspconfig", "mason_installer"),
+        })
+
         use({
             "neovim/nvim-lspconfig",
             config = P.load_conf_as("lspconfig", "lsp_config"),
-        })
-
-        -- nvim-lsp-installer
-        use({
-            "williamboman/nvim-lsp-installer",
-            opt = true,
-            setup = P.load_conf_as("lspconfig", "lsp_installer"),
         })
 
         -- null-ls
@@ -389,7 +390,10 @@ packer.startup({
         -- filetype
         use({ "nathom/filetype.nvim" })
 
-        use({ "folke/neodev.nvim" })
+        use({
+            "folke/neodev.nvim",
+            --config = "require('neodev').setup()"
+        })
         use("elzr/vim-json")
         use("cespare/vim-toml")
         use("plasticboy/vim-markdown")

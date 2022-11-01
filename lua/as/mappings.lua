@@ -220,7 +220,7 @@ M.lsp = {
         "<cmd>lua vim.lsp.buf.type_definition()<CR>",
         "LSP: Show Type Definition",
     },
-    ["<leader>ra"] = { "<cmd>lua vim.lsp.buf.rename.float()<CR>", "LSP: Rename" },
+    ["<leader>ra"] = { "<cmd>lua require'as.features.renamer'.open() <CR>", "LSP: Rename" },
     ["<leader>ca"] = {
         "<cmd>lua vim.lsp.buf.code_action()<CR>",
         "LSP: Code Action",

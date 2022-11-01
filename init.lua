@@ -4,6 +4,9 @@ vim.g.os = vim.loop.os_uname().sysname
 vim.g.open_command = vim.g.os == 'Darwin' and 'open' or 'xdg-open'
 vim.g.vim_dir = vim.fn.expand '~/.nvim'
 
+-- mason path
+vim.env.PATH = vim.env.PATH .. ":" .. vim.fn.stdpath "data" .. "/mason/bin"
+
 ------------------------------------------------------------------------
 -- Leader bindings
 ------------------------------------------------------------------------
