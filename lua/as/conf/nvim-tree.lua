@@ -24,7 +24,6 @@ M.config = function()
         disable_netrw = true,
         hijack_netrw = true,
         ignore_ft_on_setup = { "alpha" },
-        open_on_setup = false,
         hijack_cursor = true,
         hijack_unnamed_buffer_when_opening = false,
         update_cwd = true,

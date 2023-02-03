@@ -1,7 +1,8 @@
 local fn = vim.fn
 local fmt = string.format
 
-local PACKER_COMPILED_PATH = fn.stdpath("cache") .. "/packer/packer_compiled.lua"
+local PACKER_COMPILED_PATH = fn.stdpath("cache")
+    .. "/packer/packer_compiled.lua"
 
 local P = {}
 
@@ -40,7 +41,8 @@ end
 
 -- packer bootstrap
 function P.bootstrap_packer()
-    local packer_path = vim.fn.stdpath("data") .. "/site/pack/packer/opt/packer.nvim"
+    local packer_path = vim.fn.stdpath("data")
+        .. "/site/pack/packer/opt/packer.nvim"
 
     print("Cloning packer..")
     -- remove the dir before cloning
@@ -60,7 +62,12 @@ function P.bootstrap_packer()
     if present then
         print("Packer cloned successfully.")
     else
-        error("Couldn't clone packer !\nPacker path: " .. packer_path .. "\n" .. packer)
+        error(
+            "Couldn't clone packer !\nPacker path: "
+                .. packer_path
+                .. "\n"
+                .. packer
+        )
     end
 
     return packer
@@ -89,10 +96,12 @@ packer.init({
     compile_on_sync = true,
     git = { clone_timeout = 6000 },
     luarocks = {
-        python_cmd = 'python3'
-    }
+        python_cmd = "python3",
+    },
     --log = { level = 'debug'}
 })
+
+local onBufLoad = { "BufNewFile", "BufRead", "InsertEnter" }
 
 packer.startup({
     function(use, use_rocks)
@@ -143,7 +152,8 @@ packer.startup({
         -- 'lukas-reineke/indent-blankline.nvim'
         use({
             "lukas-reineke/indent-blankline.nvim",
-            event = "BufRead",
+            opt = true,
+            event = onBufLoad,
             config = P.conf("blankline"),
         })
 
@@ -170,12 +180,21 @@ packer.startup({
         use({
             "williamboman/mason.nvim",
             --opt = true,
-            cmd = { "Mason", "MasonInstall", "MasonInstallAll", "MasonUninstall", "MasonUninstallAll", "MasonLog" },
+            cmd = {
+                "Mason",
+                "MasonInstall",
+                "MasonInstallAll",
+                "MasonUninstall",
+                "MasonUninstallAll",
+                "MasonLog",
+            },
             config = P.load_conf_as("lspconfig", "mason_installer"),
         })
 
         use({
             "neovim/nvim-lspconfig",
+            opt = true,
+            event = onBufLoad,
             config = P.load_conf_as("lspconfig", "lsp_config"),
         })
 
@@ -210,7 +229,7 @@ packer.startup({
         -- friendly-snippets
         use({
             "rafamadriz/friendly-snippets",
-            module = "cmp_nvim_lsp",
+            module = { "cmp", "cmp_nvim_lsp" },
             event = "InsertEnter",
         })
 
@@ -346,7 +365,8 @@ packer.startup({
         -- Hex color display
         use({
             "norcalli/nvim-colorizer.lua",
-            event = "BufRead",
+            opt = true,
+            event = onBufLoad,
             config = P.conf("colorizer"),
         })
 
@@ -414,7 +434,7 @@ packer.startup({
         use({
             "nvim-treesitter/nvim-treesitter",
             run = ":TSUpdate",
-            event = "BufRead",
+            event = onBufLoad,
             config = P.load_conf_as("treesitter"),
         })
 
@@ -429,10 +449,15 @@ packer.startup({
             keys = "<leader>E",
             cmd = { "TSPlaygroundToggle", "TSHighlightCapturesUnderCursor" },
             setup = function()
-                require("which-key").register({ ["<leader>E"] = "treesitter: highlight cursor group" })
+                require("which-key").register({
+                    ["<leader>E"] = "treesitter: highlight cursor group",
+                })
             end,
             config = function()
-                as.nnoremap("<leader>E", "<Cmd>TSHighlightCapturesUnderCursor<CR>")
+                as.nnoremap(
+                    "<leader>E",
+                    "<Cmd>TSHighlightCapturesUnderCursor<CR>"
+                )
             end,
         })
 
@@ -452,7 +477,11 @@ packer.startup({
         --------------------------------------------------------------------------------
         -- Git
         --------------------------------------------------------------------------------
-        use({ "lewis6991/gitsigns.nvim", config = P.load_conf_as("gitsigns") })
+        use({
+            "lewis6991/gitsigns.nvim",
+            event = "BufRead",
+            config = P.load_conf_as("gitsigns"),
+        })
 
         -- gitlinker fugitive
         --use {
@@ -483,7 +512,7 @@ packer.startup({
             config = P.conf("conflict_marker"),
         })
 
-        use "baskerville/vim-sxhkdrc"
+        use("baskerville/vim-sxhkdrc")
         --  "TimUntersberger/neogit",
     end,
     log = { level = "info" },
@@ -515,7 +544,9 @@ as.command({
     end,
 })
 
-if not vim.g.packer_compiled_loaded and vim.loop.fs_stat(PACKER_COMPILED_PATH) then
+if
+    not vim.g.packer_compiled_loaded and vim.loop.fs_stat(PACKER_COMPILED_PATH)
+then
     as.source(PACKER_COMPILED_PATH)
     vim.g.packer_compiled_loaded = true
 end

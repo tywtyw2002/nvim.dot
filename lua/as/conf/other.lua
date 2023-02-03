@@ -14,6 +14,7 @@ M.blankline = function()
             "TelescopeResults",
             "nvchad_cheatsheet",
             "lsp-installer",
+            "alpha" ,
             "",
         },
         buftype_exclude = { "terminal" },
@@ -165,7 +166,11 @@ end
 M.notify = function()
     local notify = require("notify")
 
-    notify.setup()
+    notify.setup({
+		background_colour = "#000000",
+		timeout = 3000,
+		--max_width = 70
+	})
 
     vim.notify = notify
     require("telescope").load_extension("notify")
