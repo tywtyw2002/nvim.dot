@@ -173,7 +173,6 @@ M.notify = function()
 	})
 
     vim.notify = notify
-    require("telescope").load_extension("notify")
 end
 
 M.nvterm = function()

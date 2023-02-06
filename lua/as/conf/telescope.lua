@@ -1,40 +1,5 @@
 local M = {}
 
-M.requires = {
-    {
-        "nvim-telescope/telescope-fzf-native.nvim",
-        opt = true,
-        run = "make",
-        after = "telescope.nvim",
-        config = function()
-            require("telescope").load_extension("fzf")
-        end,
-    },
-    {
-        "nvim-telescope/telescope-frecency.nvim",
-        opt = true,
-        after = "telescope.nvim",
-        requires = "tami5/sqlite.lua",
-        config = function()
-            require("telescope").load_extension("frecency")
-        end,
-    },
-    {
-        "camgraff/telescope-tmux.nvim",
-        opt = true,
-        after = "telescope.nvim",
-        config = function()
-            require("telescope").load_extension("tmux")
-        end,
-    },
-    --{
-    --    "nvim-telescope/telescope-smart-history.nvim",
-    --    after = "telescope.nvim",
-    --    config = function()
-    --        require("telescope").load_extension("smart_history")
-    --    end,
-    --},
-}
 
 M.config = function()
     local actions = require("telescope.actions")
@@ -157,7 +122,7 @@ M.config = function()
     })
 
     --local extensions = { "themes", "terms" }
-    local extensions = {}
+    local extensions = { "tmux", "frecency", "fzf", "notify"}
 
     pcall(function()
         for _, ext in ipairs(extensions) do

@@ -134,11 +134,33 @@ packer.startup({
         -- telescope
         use({
             "nvim-telescope/telescope.nvim",
+            opt = true,
             cmd = "Telescope",
             module_pattern = "telescope.*",
             setup = P.load_conf_as("telescope", "setup"),
             config = P.load_conf_as("telescope", "config"),
-            requires = P.load_conf("telescope").requires,
+            requires = {
+                "telescope-fzf-native.nvim",
+                "telescope-frecency.nvim",
+                "telescope-tmux.nvim"
+            }
+        })
+
+        use({
+            "nvim-telescope/telescope-fzf-native.nvim",
+            opt = true,
+            run = "make",
+        })
+
+        use({
+            "nvim-telescope/telescope-frecency.nvim",
+            opt = true,
+            requires = "tami5/sqlite.lua",
+        })
+
+        use({
+            "camgraff/telescope-tmux.nvim",
+            opt = true,
         })
 
         -- nvim-web-devicons
@@ -204,6 +226,7 @@ packer.startup({
         -- null-ls
         use({
             "jose-elias-alvarez/null-ls.nvim",
+            opt = true,
             requires = { "nvim-lua/plenary.nvim" },
             -- trigger loading after lspconfig has started the other servers
             -- since there is otherwise a race condition and null-ls' setup would
