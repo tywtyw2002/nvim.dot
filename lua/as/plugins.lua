@@ -101,7 +101,8 @@ packer.init({
     --log = { level = 'debug'}
 })
 
-local onBufLoad = { "BufNewFile", "BufRead", "InsertEnter" }
+--local onBufLoad = { "BufNewFile", "BufRead", "InsertEnter" }
+local onBufLoad = "User FileOpened"
 
 packer.startup({
     function(use, use_rocks)
@@ -280,6 +281,7 @@ packer.startup({
         -- Scrollbar
         use({
             "petertriho/nvim-scrollbar",
+            event = onBufLoad,
             config = P.conf("scrollbar"),
         })
 
@@ -329,6 +331,7 @@ packer.startup({
         -- "surround.nvim",
         use({
             "tywtyw2002/surround.nvim",
+            event = onBufLoad,
             config = function()
                 require("surround").setup({
                     mappings_style = "surround",
@@ -357,6 +360,7 @@ packer.startup({
         use({
             "echasnovski/mini.nvim",
             config = P.conf("trailspace"),
+            event = onBufLoad,
             setup = 'require("which-key").register(require("as.mappings").trailspace)',
         })
 
