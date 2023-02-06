@@ -3,6 +3,7 @@ local M = {}
 M.requires = {
     {
         "nvim-telescope/telescope-fzf-native.nvim",
+        opt = true,
         run = "make",
         after = "telescope.nvim",
         config = function()
@@ -11,6 +12,7 @@ M.requires = {
     },
     {
         "nvim-telescope/telescope-frecency.nvim",
+        opt = true,
         after = "telescope.nvim",
         requires = "tami5/sqlite.lua",
         config = function()
@@ -19,6 +21,7 @@ M.requires = {
     },
     {
         "camgraff/telescope-tmux.nvim",
+        opt = true,
         after = "telescope.nvim",
         config = function()
             require("telescope").load_extension("tmux")

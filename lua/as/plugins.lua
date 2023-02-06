@@ -112,6 +112,8 @@ packer.startup({
 
         use_rocks("luautf8")
 
+        use({ "tami5/sqlite.lua" })
+
         -- 'nvim-lua/plenary.nvim'
         use({ "nvim-lua/plenary.nvim" })
 
