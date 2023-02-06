@@ -229,50 +229,42 @@ packer.startup({
         -----------------------------------------------------------------------------//
         -- CMP
         -----------------------------------------------------------------------------//
-        -- friendly-snippets
-        use({
-            "rafamadriz/friendly-snippets",
-            module = { "cmp", "cmp_nvim_lsp" },
-            event = "InsertEnter",
-        })
-
         -- CMP
         use({
             "hrsh7th/nvim-cmp",
-            after = "friendly-snippets",
+            wants = {
+                "cmp_luasnip",
+                "cmp-nvim-lua",
+                "cmp-nvim-lsp",
+                "cmp-buffer",
+                "cmp-path",
+            },
+            event = { "InsertEnter" },
             config = P.load_conf_as("cmp"),
         })
 
+        use({ "saadparwaiz1/cmp_luasnip", opt = true })
+
+        use({ "hrsh7th/cmp-nvim-lua", opt = true })
+
+        use({ "hrsh7th/cmp-nvim-lsp", opt = true })
+
+        use({ "hrsh7th/cmp-buffer", opt = true })
+
+        use({ "hrsh7th/cmp-path", opt = true })
+
         use({
             "L3MON4D3/LuaSnip",
-            wants = "friendly-snippets",
-            after = "nvim-cmp",
+            event = "InsertEnter",
             config = P.conf("luasnip"),
+            wants = { "friendly-snippets" }
         })
 
+        -- friendly-snippets
         use({
-            "saadparwaiz1/cmp_luasnip",
-            after = "LuaSnip",
-        })
-
-        use({
-            "hrsh7th/cmp-nvim-lua",
-            after = "cmp_luasnip",
-        })
-
-        use({
-            "hrsh7th/cmp-nvim-lsp",
-            after = "cmp-nvim-lua",
-        })
-
-        use({
-            "hrsh7th/cmp-buffer",
-            after = "cmp-nvim-lsp",
-        })
-
-        use({
-            "hrsh7th/cmp-path",
-            after = "cmp-buffer",
+            "rafamadriz/friendly-snippets",
+            --module = { "cmp", "cmp_nvim_lsp" },
+            opt = true
         })
 
         -----------------------------------------------------------------------------//
