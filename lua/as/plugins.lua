@@ -302,14 +302,9 @@ local plugins = {
 
     -- "surround.nvim",
     {
-        "tywtyw2002/surround.nvim",
+        "kylechui/nvim-surround",
         event = onBufLoad,
-        config = function()
-            require("surround").setup({
-                mappings_style = "surround",
-                map_insert_mode = false,
-            })
-        end,
+        config = P.conf("surround"),
     },
 
     -- easymotion phaazon/hop.nvim
