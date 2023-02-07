@@ -1,4 +1,6 @@
 return function()
+    dofile(vim.g.base46_cache .. "git")
+
     local gitsigns = require("gitsigns")
 
     gitsigns.setup({

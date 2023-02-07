@@ -1,20 +1,22 @@
 local M = {}
 
 M.blankline = function()
+    dofile(vim.g.base46_cache .. "blankline")
+
     local default = {
         indentLine_enabled = 1,
-        char = "▏",
+        char = "┊",
         filetype_exclude = {
             "help",
             "terminal",
             "dashboard",
-            "packer",
+            "lazy",
             "lspinfo",
             "TelescopePrompt",
             "TelescopeResults",
             "nvchad_cheatsheet",
-            "lsp-installer",
-            "alpha" ,
+            "mason",
+            "alpha",
             "",
         },
         buftype_exclude = { "terminal" },
@@ -57,8 +59,12 @@ M.colorizer = function()
             mode = "background", -- Set the display mode.
         },
     }
-    require("colorizer").setup(default["filetypes"], default["user_default_options"])
-    vim.cmd("ColorizerReloadAllBuffers")
+    require("colorizer").setup(default)
+
+    -- execute colorizer as soon as possible
+    vim.defer_fn(function()
+        require("colorizer").attach_to_buffer(0)
+    end, 0)
 end
 
 M.lsp_signature = function()
@@ -147,30 +153,18 @@ M.undotree = function()
     vim.g.undotree_SetFocusWhenToggle = 1
 end
 
---M.undotree_setup = function()
---    require("which-key").register({
---        ["<leader>u"] = { "<cmd>UndotreeToggle<CR>", "undotree: toggle" },
---    })
---end
-
---M.trailspace = function()
---    require("which-key").register({
---        [";fs"] = { "<cmd>FixWhitespace<CR>", "Remove Trailing Space." },
---    })
---end
-
 M.trailspace = function()
     require("mini.trailspace").setup()
 end
 
 M.notify = function()
+    dofile(vim.g.base46_cache .. "notify")
     local notify = require("notify")
 
     notify.setup({
-		background_colour = "#000000",
-		timeout = 3000,
-		--max_width = 70
-	})
+        timeout = 3000,
+        --max_width = 70
+    })
 
     vim.notify = notify
 end
@@ -204,4 +198,8 @@ M.nvterm = function()
     nvterm.setup(options)
 end
 
+M.todo_comments = function()
+    local defaults = {}
+    require("todo-comments").setup(defaults)
+end
 return M

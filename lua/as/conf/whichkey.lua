@@ -1,4 +1,5 @@
 return function()
+    dofile(vim.g.base46_cache .. "whichkey")
     local wk = require("which-key")
     wk.setup({
         plugins = {

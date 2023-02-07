@@ -1,7 +1,7 @@
 local M = {}
 
 M.config = function()
-    --local action = require('nvim-tree.config').nvim_tree_callback
+    dofile(vim.g.base46_cache .. "nvimtree")
 
     require("nvim-tree").setup({
         view = {

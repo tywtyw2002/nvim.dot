@@ -1,10 +1,6 @@
 local M = {}
 
---local default = {
---    colors = require("as.colors").get(),
---}
-
-default = {
+local default = {
     options = {
         offsets = { { filetype = "NvimTree", text = "", padding = 1 } },
         buffer_close_icon = "",
@@ -53,7 +49,9 @@ default = {
 
 
 M.config = function()
+    dofile(vim.g.base46_cache .. "bufferline")
     local bufferline = require("bufferline")
+
     vim.cmd [[
         function! Quit_vim(a,b,c,d)
             qa

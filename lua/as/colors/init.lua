@@ -1,42 +1,33 @@
+local new_cmd = vim.api.nvim_create_user_command
+
 local M = {}
 
 -- if theme given, load given theme if given, otherwise nvchad_theme
-M.init = function(theme)
-   if not theme then
-      --theme = require("as.utils.core").load_config().ui.theme
-      theme = vim.g.nvchad_theme
-   end
+M.init = function()
+   M.init_cmd()
 
-   -- set the global theme, used at various places like theme switcher, highlights
-   --vim.g.nvchad_theme = theme
+    local theme_file = vim.g.base46_cache .. "defaults"
+    if vim.loop.fs_stat(theme_file) then
+        dofile(theme_file)
+        return
+    end
 
-   local present, base16 = pcall(require, "base46")
+    local present, base16 = pcall(require, "base46")
 
-   if present then
-      -- first load the base16 theme
-      --base16(base16.themes(theme), true)
-      base16.load_theme()
+    if present then
+        base16.load_all_highlights()
+    end
+end
 
-      -- unload to force reload
-      --package.loaded["as.colors.highlights" or false] = nil
-      -- then load the highlights
-      --require "as.colors.highlights"
-   end
+M.init_cmd = function()
+    new_cmd("CompileTheme", function()
+        require("base46").load_all_highlights()
+    end, {})
 end
 
 -- returns a table of colors for given or current theme
-M.get = function(theme)
-   if not theme then
-      theme = vim.g.nvchad_theme
-   end
-
-   local present, hl_themes = pcall(require, "hl_themes." .. theme)
-
-   if not present then
-      hl_themes = {}
-   end
-
-   return hl_themes
+M.get = function()
+    return require("base46").get_theme_tb "base_30"
 end
 
 return M

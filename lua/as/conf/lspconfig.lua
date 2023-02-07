@@ -148,6 +148,7 @@ end
 
 --[[LSP Configs--]]
 M.lsp_config = function()
+    dofile(vim.g.base46_cache .. "lsp")
     local lspconfig = require "lspconfig"
 
     for lsp, conf in pairs(LSP_SERVERS) do
@@ -173,6 +174,8 @@ end
 
 -- Mason
 M.mason_installer = function()
+    dofile(vim.g.base46_cache .. "mason")
+
     local ensure_installed = {
         -- lua
         "lua-language-server",

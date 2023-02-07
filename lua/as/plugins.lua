@@ -1,15 +1,29 @@
 local fn = vim.fn
 local fmt = string.format
 
-local PACKER_COMPILED_PATH = fn.stdpath("cache")
-    .. "/packer/packer_compiled.lua"
-
 local P = {}
 
 ---A thin wrapper around vim.notify to add packer details to the message
 ---@param msg string
-function P.packer_notify(msg, level)
-    vim.notify(msg, level, { title = "Packer" })
+function P.notify(msg, level)
+    vim.notify(msg, level, { title = "Lazy" })
+end
+
+P.lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
+
+function P.bootstrap()
+    print("Bootstrapping lazy.nvim ..")
+
+    vim.fn.system({
+        "git",
+        "clone",
+        "--filter=blob:none",
+        "https://github.com/folke/lazy.nvim.git",
+        "--branch=stable", -- latest stable release
+        P.lazypath,
+    })
+
+    vim.fn.mkdir(vim.g.base46_cache, "p")
 end
 
 ---Require a plugin config
@@ -20,557 +34,511 @@ function P.load_conf(name)
 end
 
 function P.load_conf_as(name, func)
-    local r = ""
-    if func then
-        r = "." .. func
+    return function()
+        local f = require("as.conf." .. name)
+        if func then
+            f = f[func]
+        end
+        f()
     end
-    return "require" .. fmt("('as.conf.%s')", name) .. r .. "()"
 end
 
 --P.conf = P.load_conf("other")
 
 function P.conf(name)
-    return "require" .. fmt("('as.conf.other').%s()", name)
+    return function()
+        local f = require("as.conf.other")
+        f[name]()
+    end
 end
 
 function P.lazy_load(plugin)
-    vim.defer_fn(function()
-        require("packer").loader(plugin)
-    end, 0)
-end
+    vim.api.nvim_create_autocmd({ "BufRead", "BufWinEnter", "BufNewFile" }, {
+        group = vim.api.nvim_create_augroup("BeLazyOnFileOpen" .. plugin, {}),
+        callback = function()
+            local file = vim.fn.expand("%")
+            local condition = file ~= "NvimTree_1"
+                and file ~= "[lazy]"
+                and file ~= ""
 
--- packer bootstrap
-function P.bootstrap_packer()
-    local packer_path = vim.fn.stdpath("data")
-        .. "/site/pack/packer/opt/packer.nvim"
+            if condition then
+                vim.api.nvim_del_augroup_by_name("BeLazyOnFileOpen" .. plugin)
 
-    print("Cloning packer..")
-    -- remove the dir before cloning
-    vim.fn.delete(packer_path, "rf")
-    vim.fn.system({
-        "git",
-        "clone",
-        "https://github.com/wbthomason/packer.nvim",
-        "--depth",
-        "20",
-        packer_path,
-    })
+                -- dont defer for treesitter as it will show slow highlighting
+                -- This deferring only happens only when we do "nvim filename"
+                if plugin ~= "nvim-treesitter" then
+                    vim.schedule(function()
+                        require("lazy").load({ plugins = plugin })
 
-    vim.cmd("packadd packer.nvim")
-    present, packer = pcall(require, "packer")
-
-    if present then
-        print("Packer cloned successfully.")
-    else
-        error(
-            "Couldn't clone packer !\nPacker path: "
-                .. packer_path
-                .. "\n"
-                .. packer
-        )
-    end
-
-    return packer
-end
-
-pcall(vim.cmd, "packadd packer.nvim")
-local present, packer = pcall(require, "packer")
-
-if not present then
-    packer = P.bootstrap_packer()
-end
-
-packer.init({
-    display = {
-        open_fn = function()
-            return require("packer.util").float({ border = "single" })
+                        if plugin == "nvim-lspconfig" then
+                            vim.cmd("silent! do FileType")
+                        end
+                    end, 0)
+                else
+                    require("lazy").load({ plugins = plugin })
+                end
+            end
         end,
-        prompt_border = "single",
-        working_sym = " ﲊ",
-        error_sym = "✗ ",
-        done_sym = " ",
-        removed_sym = " ",
-        moved_sym = "",
-    },
-    auto_clean = true,
-    compile_on_sync = true,
-    git = { clone_timeout = 6000 },
-    luarocks = {
-        python_cmd = "python3",
-    },
-    --log = { level = 'debug'}
-})
-
---local onBufLoad = { "BufNewFile", "BufRead", "InsertEnter" }
-local onBufLoad = "User FileOpened"
-
-packer.startup({
-    function(use, use_rocks)
-        --use({"wbthomason/packer.nvim", opt = true })
-        use({ "wbthomason/packer.nvim", event = "VimEnter" })
-
-        use_rocks("penlight")
-
-        use_rocks("luautf8")
-
-        use({ "tami5/sqlite.lua" })
-
-        -- 'nvim-lua/plenary.nvim'
-        use({ "nvim-lua/plenary.nvim" })
-
-        -- startup cache
-        use("lewis6991/impatient.nvim")
-
-        -- theme
-        use({
-            "NvChad/base46",
-            after = "plenary.nvim",
-            commit = "f39d712a915b837fe34bb74ab880a1879fc6eaf1",
-            config = function()
-                require("as.colors").init()
-            end,
-        })
-
-        -- telescope
-        use({
-            "nvim-telescope/telescope.nvim",
-            opt = true,
-            cmd = "Telescope",
-            module_pattern = "telescope.*",
-            setup = P.load_conf_as("telescope", "setup"),
-            config = P.load_conf_as("telescope", "config"),
-            requires = {
-                "telescope-fzf-native.nvim",
-                "telescope-frecency.nvim",
-                "telescope-tmux.nvim"
-            }
-        })
-
-        use({
-            "nvim-telescope/telescope-fzf-native.nvim",
-            opt = true,
-            run = "make",
-        })
-
-        use({
-            "nvim-telescope/telescope-frecency.nvim",
-            opt = true,
-            requires = "tami5/sqlite.lua",
-        })
-
-        use({
-            "camgraff/telescope-tmux.nvim",
-            opt = true,
-        })
-
-        -- nvim-web-devicons
-        use({
-            "kyazdani42/nvim-web-devicons",
-            after = "base46",
-        })
-
-        use({
-            "folke/which-key.nvim",
-            config = P.load_conf_as("whichkey"),
-        })
-
-        -- 'lukas-reineke/indent-blankline.nvim'
-        use({
-            "lukas-reineke/indent-blankline.nvim",
-            opt = true,
-            event = onBufLoad,
-            config = P.conf("blankline"),
-        })
-
-        -- Tree
-        use({
-            "kyazdani42/nvim-tree.lua",
-            ft = "alpha",
-            config = P.load_conf_as("nvim-tree", "config"),
-            --requires = "nvim-web-devicons",
-            cmd = { "NvimTreeToggle", "NvimTreeFocus" },
-            setup = P.load_conf_as("nvim-tree", "setup"),
-        })
-
-        -- Tmux navigator
-        use({
-            "christoomey/vim-tmux-navigator",
-            config = P.conf("tmux_navigator"),
-        })
-
-        -----------------------------------------------------------------------------//
-        -- LSP
-        -----------------------------------------------------------------------------//
-        -- nvim-lsp-installer
-        use({
-            "williamboman/mason.nvim",
-            --opt = true,
-            cmd = {
-                "Mason",
-                "MasonInstall",
-                "MasonInstallAll",
-                "MasonUninstall",
-                "MasonUninstallAll",
-                "MasonLog",
-            },
-            config = P.load_conf_as("lspconfig", "mason_installer"),
-        })
-
-        use({
-            "neovim/nvim-lspconfig",
-            opt = true,
-            event = onBufLoad,
-            config = P.load_conf_as("lspconfig", "lsp_config"),
-        })
-
-        -- null-ls
-        use({
-            "jose-elias-alvarez/null-ls.nvim",
-            opt = true,
-            requires = { "nvim-lua/plenary.nvim" },
-            -- trigger loading after lspconfig has started the other servers
-            -- since there is otherwise a race condition and null-ls' setup would
-            -- have to be moved into lspconfig.lua otherwise
-            config = P.load_conf_as("lspconfig", "null_ls"),
-        })
-
-        use({
-            "ray-x/lsp_signature.nvim",
-            config = P.conf("lsp_signature"),
-            after = "nvim-lspconfig",
-        })
-
-        -- trouble
-        use({
-            "folke/trouble.nvim",
-            cmd = { "TroubleToggle" },
-            setup = "require('which-key').register(require('as.mappings').trouble)",
-            requires = "nvim-web-devicons",
-            config = P.load_conf_as("trouble", "config"),
-        })
-
-        -----------------------------------------------------------------------------//
-        -- CMP
-        -----------------------------------------------------------------------------//
-        -- CMP
-        use({
-            "hrsh7th/nvim-cmp",
-            wants = {
-                "cmp_luasnip",
-                "cmp-nvim-lua",
-                "cmp-nvim-lsp",
-                "cmp-buffer",
-                "cmp-path",
-            },
-            event = { "InsertEnter" },
-            config = P.load_conf_as("cmp"),
-        })
-
-        use({ "saadparwaiz1/cmp_luasnip", opt = true })
-
-        use({ "hrsh7th/cmp-nvim-lua", opt = true })
-
-        use({ "hrsh7th/cmp-nvim-lsp", opt = true })
-
-        use({ "hrsh7th/cmp-buffer", opt = true })
-
-        use({ "hrsh7th/cmp-path", opt = true })
-
-        use({
-            "L3MON4D3/LuaSnip",
-            event = "InsertEnter",
-            config = P.conf("luasnip"),
-            wants = { "friendly-snippets" }
-        })
-
-        -- friendly-snippets
-        use({
-            "rafamadriz/friendly-snippets",
-            --module = { "cmp", "cmp_nvim_lsp" },
-            opt = true
-        })
-
-        -----------------------------------------------------------------------------//
-        -- UI
-        -----------------------------------------------------------------------------//
-        -- Scrollbar
-        use({
-            "petertriho/nvim-scrollbar",
-            event = onBufLoad,
-            config = P.conf("scrollbar"),
-        })
-
-        -- goolord/alpha-nvim
-        use({
-            "goolord/alpha-nvim",
-            config = P.load_conf_as("alpha", "config"),
-            setup = P.load_conf_as("alpha", "setup"),
-        })
-
-        -- Standalone UI for nvim-lsp progress.
-        use({
-            "j-hui/fidget.nvim",
-            disable = true,
-            config = function()
-                require("fidget").setup({})
-            end,
-        })
-
-        -- Tab bufferline
-        use({
-            "akinsho/bufferline.nvim",
-            branch = "main",
-            after = "nvim-web-devicons",
-            config = P.load_conf_as("bufferline", "config"),
-            setup = P.load_conf_as("bufferline", "setup"),
-        })
-
-        -- feline
-        use({
-            "feline-nvim/feline.nvim",
-            after = "nvim-web-devicons",
-            config = P.load_conf_as("feline"),
-        })
-
-        use({
-            "SmiteshP/nvim-gps",
-            event = "CursorMoved",
-            config = P.load_conf_as("gps"),
-        })
-
-        -----------------------------------------------------------------------------//
-        -- Editor
-        -----------------------------------------------------------------------------//
-        -- "andymass/vim-matchup",
-
-        -- "surround.nvim",
-        use({
-            "tywtyw2002/surround.nvim",
-            event = onBufLoad,
-            config = function()
-                require("surround").setup({
-                    mappings_style = "surround",
-                    map_insert_mode = false,
-                })
-            end,
-        })
-
-        -- easymotion phaazon/hop.nvim
-        use({
-            "phaazon/hop.nvim",
-            keys = { { "n", "s" }, "f", "F", { "n", "/" } },
-            config = P.load_conf_as("hop"),
-        })
-
-        -- comment
-        use({
-            "numToStr/Comment.nvim",
-            module = "Comment",
-            keys = { "gc", "gb" },
-            config = P.conf("comment"),
-            setup = 'require("which-key").register(require("as.mappings").comment)',
-        })
-
-        -- mini (Tailspace)
-        use({
-            "echasnovski/mini.nvim",
-            config = P.conf("trailspace"),
-            event = onBufLoad,
-            setup = 'require("which-key").register(require("as.mappings").trailspace)',
-        })
-
-        use("andymass/vim-matchup")
-        --------------------------------------------------------------------------------
-        -- Utilitiess
-        --------------------------------------------------------------------------------
-        -- Hex color display
-        use({
-            "norcalli/nvim-colorizer.lua",
-            opt = true,
-            event = onBufLoad,
-            config = P.conf("colorizer"),
-        })
-
-        use({
-            "mbbill/undotree",
-            cmd = "UndotreeToggle",
-            keys = "<leader>u",
-            --setup = P.conf("undotree_setup"),
-            setup = "require('which-key').register(require('as.mappings').undotree)",
-            config = P.conf("undotree"),
-        })
-
-        --"windwp/nvim-autopairs"
-        use({
-            "windwp/nvim-autopairs",
-            after = { "nvim-cmp" },
-            config = P.conf("autopairs"),
-        })
-
-        -- "max397574/better-escape.nvim",
-        use({
-            "max397574/better-escape.nvim",
-            event = "InsertCharPre",
-            config = P.conf("better_escape"),
-        })
-
-        use({
-            "rcarriga/nvim-notify",
-            config = P.conf("notify"),
-        })
-
-        use({
-            "NvChad/nvterm",
-            config = P.conf("nvterm"),
-            setup = "require('which-key').register(require('as.mappings').nvterm)",
-        })
-
-        --------------------------------------------------------------------------------
-        -- Profiling & Startup
-        --------------------------------------------------------------------------------
-        -- filetype
-        use({ "nathom/filetype.nvim" })
-
-        use({
-            "folke/neodev.nvim",
-            --config = "require('neodev').setup()"
-        })
-        use("elzr/vim-json")
-        use("cespare/vim-toml")
-        use("plasticboy/vim-markdown")
-        --use 'uarun/vim-protobuf'
-        --use 'rust-lang/rust.vim'
-        --use 'fatih/vim-go'
-        --use 'pangloss/vim-javascript'
-        --use 'leafgarland/typescript-vim'
-        --use 'peitalin/vim-jsx-typescript'
-        use("mtdl9/vim-log-highlighting")
-
-        -- speed profiling
-        -- dstein64/vim-startuptime
-        --------------------------------------------------------------------------------
-        -- Syntax
-        --------------------------------------------------------------------------------
-        -- treesitter
-        use({
-            "nvim-treesitter/nvim-treesitter",
-            run = ":TSUpdate",
-            event = onBufLoad,
-            config = P.load_conf_as("treesitter"),
-        })
-
-        use({ "p00f/nvim-ts-rainbow", after = "nvim-treesitter" })
-        use({
-            "nvim-treesitter/nvim-treesitter-textobjects",
-            after = "nvim-treesitter",
-        })
-        use({
-            "nvim-treesitter/playground",
-            disable = true,
-            keys = "<leader>E",
-            cmd = { "TSPlaygroundToggle", "TSHighlightCapturesUnderCursor" },
-            setup = function()
-                require("which-key").register({
-                    ["<leader>E"] = "treesitter: highlight cursor group",
-                })
-            end,
-            config = function()
-                as.nnoremap(
-                    "<leader>E",
-                    "<Cmd>TSHighlightCapturesUnderCursor<CR>"
-                )
-            end,
-        })
-
-        --[[    -- Use <Tab> to escape from pairs such as ""|''|() etc.
-          use {
-          'abecodes/tabout.nvim',
-          wants = { 'nvim-treesitter' },
-          --after = { 'nvim-cmp' },
-          config = function()
-            require('tabout').setup {
-            completion = false,
-            ignore_beginning = false,
-            }
-          end,
-          }
-        --]]
-        --------------------------------------------------------------------------------
-        -- Git
-        --------------------------------------------------------------------------------
-        use({
-            "lewis6991/gitsigns.nvim",
-            event = "BufRead",
-            config = P.load_conf_as("gitsigns"),
-        })
-
-        -- gitlinker fugitive
-        --use {
-        --  "ruifm/gitlinker.nvim",
-        --  requires = "plenary.nvim",
-        --  keys = {"<localleader>gu", "<localleader>go"},
-        --  setup = function()
-        --    require("which-key").register(
-        --      {gu = "gitlinker: get line url", go = "gitlinker: open repo url"},
-        --      {prefix = "<localleader>"}
-        --    )
-        --  end,
-        --  config = function()
-        --    local linker = require "gitlinker"
-        --    linker.setup {mappings = "<localleader>gu"}
-        --    as.nnoremap(
-        --      "<localleader>go",
-        --      function()
-        --        linker.get_repo_url {action_callback = require("gitlinker.actions").open_in_browser}
-        --      end
-        --    )
-        --  end
-        --}
-
-        -- conflict-marker.vim
-        use({
-            "rhysd/conflict-marker.vim",
-            config = P.conf("conflict_marker"),
-        })
-
-        use("baskerville/vim-sxhkdrc")
-        --  "TimUntersberger/neogit",
-    end,
-    log = { level = "info" },
-    config = {
-        compile_path = PACKER_COMPILED_PATH,
-        display = {
-            prompt_border = "rounded",
-            open_cmd = "silent topleft 65vnew",
-        },
-        profile = {
-            enable = true,
-            threshold = 1,
-        },
-    },
-})
-
-as.command({
-    "PackerCompiledEdit",
-    function()
-        vim.cmd(fmt("edit %s", PACKER_COMPILED_PATH))
-    end,
-})
-
-as.command({
-    "PackerCompiledDelete",
-    function()
-        vim.fn.delete(PACKER_COMPILED_PATH)
-        P.packer_notify(fmt("Deleted %s", PACKER_COMPILED_PATH))
-    end,
-})
-
-if
-    not vim.g.packer_compiled_loaded and vim.loop.fs_stat(PACKER_COMPILED_PATH)
-then
-    as.source(PACKER_COMPILED_PATH)
-    vim.g.packer_compiled_loaded = true
+    })
 end
 
-as.nnoremap("<leader>ps", [[<Cmd>PackerSync<CR>]])
-as.nnoremap("<leader>pc", [[<Cmd>PackerClean<CR>]])
+local onBufLoad = { "BufNewFile", "BufRead", "InsertEnter" }
+
+local plugins = {
+    { "nvim-lua/plenary.nvim" },
+
+    -- theme
+    {
+        "NvChad/base46",
+        lazy = false,
+        branch = "v2.0",
+        config = function()
+            require("as.colors").init()
+        end,
+    },
+
+    {
+        "folke/which-key.nvim",
+        config = P.load_conf_as("whichkey"),
+    },
+
+    -- telescope
+    {
+        "nvim-telescope/telescope.nvim",
+        cmd = "Telescope",
+        init = P.load_conf_as("telescope", "setup"),
+        config = P.load_conf_as("telescope", "config"),
+        dependencies = {
+            "telescope-fzf-native.nvim",
+            "telescope-frecency.nvim",
+            "telescope-tmux.nvim",
+        },
+    },
+
+    {
+        "nvim-telescope/telescope-fzf-native.nvim",
+        build = "make",
+    },
+    {
+        "nvim-telescope/telescope-frecency.nvim",
+        dependencies = "tami5/sqlite.lua",
+    },
+    { "camgraff/telescope-tmux.nvim" },
+
+    -- nvim-web-devicons
+    {
+        "kyazdani42/nvim-web-devicons",
+        config = function()
+            dofile(vim.g.base46_cache .. "devicons")
+        end,
+    },
+
+    -- 'lukas-reineke/indent-blankline.nvim'
+    {
+        "lukas-reineke/indent-blankline.nvim",
+        init = function ()
+            P.lazy_load "indent-blankline.nvim"
+        end,
+        config = P.conf("blankline"),
+    },
+
+    -- Tree
+    {
+        "kyazdani42/nvim-tree.lua",
+        --ft = "alpha",
+        config = P.load_conf_as("nvim-tree", "config"),
+        cmd = { "NvimTreeToggle", "NvimTreeFocus" },
+        init = P.load_conf_as("nvim-tree", "setup"),
+    },
+
+    -- Tmux navigator
+    {
+        "christoomey/vim-tmux-navigator",
+        config = P.conf("tmux_navigator"),
+    },
+
+    -----------------------------------------------------------------------------//
+    -- LSP
+    -----------------------------------------------------------------------------//
+    -- nvim-lsp-installer
+    {
+        "williamboman/mason.nvim",
+        cmd = {
+            "Mason",
+            "MasonInstall",
+            "MasonInstallAll",
+            "MasonUninstall",
+            "MasonUninstallAll",
+            "MasonLog",
+        },
+        config = P.load_conf_as("lspconfig", "mason_installer"),
+    },
+
+    {
+        "neovim/nvim-lspconfig",
+        init = function ()
+            P.lazy_load "nvim-lspconfig"
+        end,
+        config = P.load_conf_as("lspconfig", "lsp_config"),
+        dependencies = {"null-ls.nvim", "lsp_signature.nvim"}
+    },
+
+    -- null-ls
+    {
+        "jose-elias-alvarez/null-ls.nvim",
+        dependencies = { "nvim-lua/plenary.nvim" },
+        config = P.load_conf_as("lspconfig", "null_ls"),
+    },
+
+    {
+        "ray-x/lsp_signature.nvim",
+        config = P.conf("lsp_signature"),
+    },
+
+    -- trouble
+    {
+        "folke/trouble.nvim",
+        cmd = { "TroubleToggle" },
+        init = function()
+            require("which-key").register(require("as.mappings").trouble)
+        end,
+        dependencies = "nvim-web-devicons",
+        config = P.load_conf_as("trouble", "config"),
+    },
+
+    -----------------------------------------------------------------------------//
+    -- CMP
+    -----------------------------------------------------------------------------//
+    -- CMP
+    {
+        "hrsh7th/nvim-cmp",
+        dependencies = {
+            "cmp_luasnip",
+            "cmp-nvim-lua",
+            "cmp-nvim-lsp",
+            "cmp-buffer",
+            "cmp-path",
+        },
+        event = { "InsertEnter" },
+        config = P.load_conf_as("cmp"),
+    },
+
+    { "saadparwaiz1/cmp_luasnip" },
+
+    { "hrsh7th/cmp-nvim-lua" },
+
+    { "hrsh7th/cmp-nvim-lsp" },
+
+    { "hrsh7th/cmp-buffer" },
+
+    { "hrsh7th/cmp-path" },
+
+    {
+        "L3MON4D3/LuaSnip",
+        event = "InsertEnter",
+        config = P.conf("luasnip"),
+        dependencies = { "friendly-snippets" },
+    },
+
+    -- friendly-snippets
+    { "rafamadriz/friendly-snippets" },
+
+    -----------------------------------------------------------------------------//
+    -- UI
+    -----------------------------------------------------------------------------//
+    -- Scrollbar
+    {
+        "petertriho/nvim-scrollbar",
+        event = onBufLoad,
+        config = P.conf("scrollbar"),
+    },
+
+    -- goolord/alpha-nvim
+    {
+        "goolord/alpha-nvim",
+        lazy = false,
+        config = P.load_conf_as("alpha", "config"),
+        --init = P.load_conf_as("alpha", "setup"),
+    },
+
+    -- Standalone UI for nvim-lsp progress.
+    {
+        "j-hui/fidget.nvim",
+        enabled = false,
+        config = function()
+            require("fidget").setup({})
+        end,
+    },
+
+    -- Tab bufferline
+    {
+        "akinsho/bufferline.nvim",
+        branch = "main",
+        dependencies = "nvim-web-devicons",
+        event = { "BufAdd", "BufEnter", "tabnew" },
+        config = P.load_conf_as("bufferline", "config"),
+        init = P.load_conf_as("bufferline", "setup"),
+    },
+
+    -- feline
+    {
+        "feline-nvim/feline.nvim",
+        lazy = false,
+        dependencies = "nvim-web-devicons",
+        config = P.load_conf_as("feline"),
+    },
+
+    -- TODO: SmiteshP/nvim-navic
+    --{
+    --    "SmiteshP/nvim-gps",
+    --    event = "CursorMoved",
+    --    config = P.load_conf_as("gps"),
+    --},
+
+    -----------------------------------------------------------------------------//
+    -- Editor
+    -----------------------------------------------------------------------------//
+    -- "andymass/vim-matchup",
+
+    -- "surround.nvim",
+    {
+        "tywtyw2002/surround.nvim",
+        event = onBufLoad,
+        config = function()
+            require("surround").setup({
+                mappings_style = "surround",
+                map_insert_mode = false,
+            })
+        end,
+    },
+
+    -- easymotion phaazon/hop.nvim
+    {
+        "phaazon/hop.nvim",
+        config = P.load_conf_as("hop"),
+        event = onBufLoad,
+    },
+
+    -- comment
+    {
+        "numToStr/Comment.nvim",
+        keys = { "gc", "gb" },
+        config = P.conf("comment"),
+        init = function()
+            require("which-key").register(require("as.mappings").comment)
+        end,
+    },
+
+    -- mini (Tailspace)
+    {
+        "echasnovski/mini.nvim",
+        config = P.conf("trailspace"),
+        event = onBufLoad,
+        init = function()
+            require("which-key").register(require("as.mappings").trailspace)
+        end,
+    },
+
+    "andymass/vim-matchup",
+    --------------------------------------------------------------------------------
+    -- Utilitiess
+    --------------------------------------------------------------------------------
+    -- Hex color display
+    {
+        --"norcalli/nvim-colorizer.lua",
+        "NvChad/nvim-colorizer.lua",
+        init = function ()
+            P.lazy_load "nvim-colorizer.lua"
+        end,
+        config = P.conf("colorizer"),
+    },
+
+    {
+        "mbbill/undotree",
+        cmd = "UndotreeToggle",
+        keys = "<leader>u",
+        init = function()
+            require("which-key").register(require("as.mappings").undotree)
+        end,
+        config = P.conf("undotree"),
+    },
+
+    --"windwp/nvim-autopairs"
+    {
+        "windwp/nvim-autopairs",
+        event = "InsertEnter",
+        config = P.conf("autopairs"),
+    },
+
+    {
+        "rcarriga/nvim-notify",
+        config = P.conf("notify"),
+    },
+
+    {
+        "NvChad/nvterm",
+        config = P.conf("nvterm"),
+        init = function()
+            require("which-key").register(require("as.mappings").nvterm)
+        end,
+    },
+
+    {
+        "folke/todo-comments.nvim",
+        dependencies = "plenary.nvim",
+        init = function ()
+            P.lazy_load "todo-comments.nvim"
+        end,
+        config = P.conf("todo_comments"),
+    },
+
+    --------------------------------------------------------------------------------
+    -- Profiling & Startup
+    --------------------------------------------------------------------------------
+    -- filetype
+    --{ "nathom/filetype.nvim" },
+
+    { "folke/neodev.nvim", enabled = false },
+    "elzr/vim-json",
+    "cespare/vim-toml",
+    "plasticboy/vim-markdown",
+    --use 'uarun/vim-protobuf'
+    --use 'rust-lang/rust.vim'
+    --use 'fatih/vim-go'
+    --use 'pangloss/vim-javascript'
+    --use 'leafgarland/typescript-vim'
+    --use 'peitalin/vim-jsx-typescript'
+    "mtdl9/vim-log-highlighting",
+    "baskerville/vim-sxhkdrc",
+
+    -- speed profiling
+    -- dstein64/vim-startuptime
+    --------------------------------------------------------------------------------
+    -- Syntax
+    --------------------------------------------------------------------------------
+    -- treesitter
+    {
+        "nvim-treesitter/nvim-treesitter",
+        init = function()
+            P.lazy_load("nvim-treesitter")
+        end,
+        build = ":TSUpdate",
+        event = onBufLoad,
+        config = P.load_conf_as("treesitter"),
+        dependencies = {
+            "nvim-ts-rainbow",
+            "nvim-treesitter-textobjects",
+        },
+    },
+
+    { "p00f/nvim-ts-rainbow" },
+    { "nvim-treesitter/nvim-treesitter-textobjects" },
+    {
+        "nvim-treesitter/playground",
+        enabled = false,
+        keys = "<leader>E",
+        cmd = { "TSPlaygroundToggle", "TSHighlightCapturesUnderCursor" },
+        init = function()
+            require("which-key").register({
+                ["<leader>E"] = "treesitter: highlight cursor group",
+            })
+        end,
+        config = function()
+            as.nnoremap("<leader>E", "<Cmd>TSHighlightCapturesUnderCursor<CR>")
+        end,
+    },
+
+    --------------------------------------------------------------------------------
+    -- Git
+    --------------------------------------------------------------------------------
+    {
+        "lewis6991/gitsigns.nvim",
+        ft = "gitcommit",
+        init = function()
+            -- load gitsigns only when a git file is opened
+            vim.api.nvim_create_autocmd({ "BufRead" }, {
+                group = vim.api.nvim_create_augroup(
+                    "GitSignsLazyLoad",
+                    { clear = true }
+                ),
+                callback = function()
+                    vim.fn.system(
+                        "git -C " .. vim.fn.expand("%:p:h") .. " rev-parse"
+                    )
+                    if vim.v.shell_error == 0 then
+                        vim.api.nvim_del_augroup_by_name("GitSignsLazyLoad")
+                        vim.schedule(function()
+                            require("lazy").load({ plugins = "gitsigns.nvim" })
+                        end)
+                    end
+                end,
+            })
+        end,
+        config = P.load_conf_as("gitsigns"),
+    },
+
+    -- conflict-marker.vim
+    -- TODO: https://github.com/akinsho/git-conflict.nvim
+    --{
+    --    "rhysd/conflict-marker.vim",
+    --    config = P.conf("conflict_marker"),
+    --},
+}
+
+local lazy_config = {
+    defaults = { lazy = true },
+    ui = {
+        icons = {
+            start = "",
+            cmd = "",
+            event = "ﯓ",
+            ft = "",
+            lazy = "鈴 ",
+            loaded = "",
+            not_loaded = "",
+        },
+    },
+
+    performance = {
+        rtp = {
+            paths = { vim.g.dotpath },
+            disabled_plugins = {
+                "2html_plugin",
+                "tohtml",
+                "getscript",
+                "getscriptPlugin",
+                "gzip",
+                "logipat",
+                "netrw",
+                "netrwPlugin",
+                "netrwSettings",
+                "netrwFileHandlers",
+                "matchit",
+                "tar",
+                "tarPlugin",
+                "rrhelper",
+                "spellfile_plugin",
+                "vimball",
+                "vimballPlugin",
+                "zip",
+                "zipPlugin",
+                "tutor",
+                "rplugin",
+                "syntax",
+                "synmenu",
+                "optwin",
+                "compiler",
+                "bugreport",
+                "ftplugin",
+            },
+        },
+    },
+}
+
+if not vim.loop.fs_stat(P.lazypath) then
+    P.bootstrap()
+end
+
+vim.opt.rtp:prepend(P.lazypath)
+
+require("lazy").setup(plugins, lazy_config)

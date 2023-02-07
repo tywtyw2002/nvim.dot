@@ -161,14 +161,6 @@ M.dashboard = {
     ["<leader>ds"] = { "<Cmd>SessionSave <CR>", "Dashboard: Save Session" },
 }
 
---M.alpha = {
---    ["<leader>bm"] = { "<Cmd>DashboardJumpMarks <CR>", "Dashboard: Bookmark" },
---    ["<leader>fn"] = { "<Cmd>DashboardNewFile <CR>", "Dashboard: New File" },
---    ["<leader>db"] = { "<Cmd>Dashboard <CR>", "Dashboard: Open" },
---    ["<leader>dl"] = { "<Cmd>SessionLoad <CR>", "Dashboard: Load Session" },
---    ["<leader>ds"] = { "<Cmd>SessionSave <CR>", "Dashboard: Save Session" },
---}
-
 M.lsp = {
     ["gD"] = {
         "<cmd>lua vim.lsp.buf.declaration()<CR>",

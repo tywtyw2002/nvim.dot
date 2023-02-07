@@ -126,5 +126,7 @@ local default = {
 }
 
 return function()
+    dofile(vim.g.base46_cache .. "cmp")
+
     return cmp.setup(default)
 end

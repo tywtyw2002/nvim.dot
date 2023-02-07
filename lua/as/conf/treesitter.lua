@@ -1,6 +1,5 @@
 local ts = "<cmd>lua require'nvim-treesitter.textobjects.move'"
 
-
 local function cmd_go_start(query)
     return ts .. '.goto_previous_start("' .. query .. '")<CR>'
 end
@@ -10,14 +9,7 @@ local function cmd_go_end(query)
 end
 
 return function()
-    --local parser_configs = require("nvim-treesitter.parsers").get_parser_configs()
-    --parser_configs.norg_meta = {
-    --    install_info = {
-    --        url = "https://github.com/nvim-neorg/tree-sitter-norg-meta",
-    --        files = { "src/parser.c" },
-    --        branch = "main",
-    --    },
-    --}
+    dofile(vim.g.base46_cache .. "syntax")
 
     require("nvim-treesitter.configs").setup({
         ensure_installed = { "lua", "python", "vim" },

@@ -4,7 +4,7 @@ if not present then
     return
 end
 
-local colors = require("base46").get_colors "base_30"
+local colors = require("as.colors").get()
 
 local default = {
     lsp = require("feline.providers.lsp"),

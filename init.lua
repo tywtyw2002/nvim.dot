@@ -1,5 +1,5 @@
-vim.cmd [[set runtimepath+=~/.nvim]]
-
+vim.g.dotpath = vim.fn.expand "~/.nvim"
+vim.opt.rtp:prepend(vim.g.dotpath)
 vim.g.os = vim.loop.os_uname().sysname
 vim.g.open_command = vim.g.os == 'Darwin' and 'open' or 'xdg-open'
 vim.g.vim_dir = vim.fn.expand '~/.nvim'
@@ -22,15 +22,9 @@ function R(name)
   return require(name)
 end
 
-local present, impatient = pcall(require, "impatient")
-
-if present then
-   impatient.enable_profile()
-end
-
 ------------------------------------------------------------------------
 -- Plugin Configurations
-------------------------------------------------------------------------
+----------------------------------------------------------------------
 R 'as.globals'
 R 'as.autocmds'
 R 'as.settings'

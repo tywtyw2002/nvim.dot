@@ -1,7 +1,8 @@
 local M = {}
 
-
 M.config = function()
+    dofile(vim.g.base46_cache .. "telescope")
+
     local actions = require("telescope.actions")
     local layout_actions = require("telescope.actions.layout")
     local themes = require 'telescope.themes'
