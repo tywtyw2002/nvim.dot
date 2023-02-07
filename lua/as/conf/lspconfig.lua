@@ -36,8 +36,18 @@ local function lsp_setup_autocommands(client, _)
     end
 end
 
+local function attach_navic(client, bufnr)
+    local present, navic = pcall(require, "nvim-navic")
+
+    if present and client.server_capabilities.documentSymbolProvider then
+        navic.attach(client, bufnr)
+    end
+end
+
+
 L.on_attach = function(client, bufnr)
     lsp_setup_autocommands(client, bufnr)
+    attach_navic(client, bufnr)
 
     client.server_capabilities.documentFormattingProvider = false
     client.server_capabilities.documentRangeFormattingProvider = false

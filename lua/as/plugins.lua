@@ -288,12 +288,12 @@ local plugins = {
         config = P.load_conf_as("feline"),
     },
 
-    -- TODO: SmiteshP/nvim-navic
-    --{
-    --    "SmiteshP/nvim-gps",
-    --    event = "CursorMoved",
-    --    config = P.load_conf_as("gps"),
-    --},
+    -- SmiteshP/nvim-navic
+    {
+        "SmiteshP/nvim-navic",
+        event = "CursorMoved",
+        config = P.load_conf_as("gps"),
+    },
 
     -----------------------------------------------------------------------------//
     -- Editor
