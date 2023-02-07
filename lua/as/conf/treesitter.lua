@@ -12,10 +12,19 @@ return function()
     dofile(vim.g.base46_cache .. "syntax")
 
     require("nvim-treesitter.configs").setup({
-        ensure_installed = { "lua", "python", "vim" },
+        ensure_installed = { "lua", "python", "vim", "rust" },
         highlight = {
             enable = true,
             use_languagetree = true,
+            disable = function(lang, buf)
+                if lang == "vim" then
+                    local bufname = vim.api.nvim_buf_get_name(buf)
+                    return string.match(bufname, "%[Command Line%]")
+                else
+                    return false
+                end
+            end,
+            additional_vim_regex_highlighting = false,
         },
         incremental_selection = {
             enable = true,
