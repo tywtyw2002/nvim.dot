@@ -8,6 +8,7 @@ M.load_config = function()
             hl_add = {},
             hl_override = {},
             transparency = false,
+            extended_integrations = { "alpha", "bufferline", "notify" },
             -- cmp themeing
             cmp = {
                 icons = true,
