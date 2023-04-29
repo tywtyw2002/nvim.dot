@@ -117,7 +117,7 @@ LSP_SERVERS.pylsp = {
     }
 }
 
-LSP_SERVERS.sumneko_lua = function ()
+LSP_SERVERS.lua_ls = function ()
     -- wow lua "/Users/tyw/git/vscode-wow-api/EmmyLua/"
     local library = {}
 
