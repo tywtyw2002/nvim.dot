@@ -99,6 +99,7 @@ M.autopairs = function()
 
     local default = {
         fast_wrap = {},
+        disable_filetype = { "TelescopePrompt", "vim" },
     }
 
     autopairs.setup(default)

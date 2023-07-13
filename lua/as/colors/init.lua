@@ -30,4 +30,9 @@ M.get = function()
     return require("base46").get_theme_tb "base_30"
 end
 
+M.set_transparency = function(status)
+    vim.g.transparency = status
+    require("base46").load_all_highlights()
+end
+
 return M

@@ -95,6 +95,21 @@ local plugins = {
         config = function()
             require("as.colors").init()
         end,
+        --build = function()
+        --    require("base46").load_all_highlights()
+        --end,
+    },
+
+    {
+        "NvChad/ui",
+        branch = "v2.0",
+        lazy = false,
+        config = function()
+            require "nvchad_ui"
+            --require('as.features.statusline').hotfix_hl()
+            vim.opt.statusline = "%!v:lua.require('as.features.statusline').run()"
+            --vim.cmd "function! TbToggle_transparency(a,b,c,d) \n lua require('as.colors').toggle_transparency() \n endfunction"
+        end,
     },
 
     {
@@ -213,11 +228,14 @@ local plugins = {
     {
         "hrsh7th/nvim-cmp",
         dependencies = {
-            "cmp_luasnip",
+            "saadparwaiz1/cmp_luasnip",
             "cmp-nvim-lua",
             "cmp-nvim-lsp",
             "cmp-buffer",
             "cmp-path",
+            -- with configs
+            "L3MON4D3/LuaSnip",
+            "windwp/nvim-autopairs"
         },
         event = { "InsertEnter" },
         config = P.load_conf_as("cmp"),
@@ -254,12 +272,12 @@ local plugins = {
     },
 
     -- goolord/alpha-nvim
-    {
-        "goolord/alpha-nvim",
-        lazy = false,
-        config = P.load_conf_as("alpha", "config"),
-        --init = P.load_conf_as("alpha", "setup"),
-    },
+    --{
+    --    "goolord/alpha-nvim",
+    --    lazy = false,
+    --    config = P.load_conf_as("alpha", "config"),
+    --    --init = P.load_conf_as("alpha", "setup"),
+    --},
 
     -- Standalone UI for nvim-lsp progress.
     {
@@ -271,22 +289,22 @@ local plugins = {
     },
 
     -- Tab bufferline
-    {
-        "akinsho/bufferline.nvim",
-        branch = "main",
-        dependencies = "nvim-web-devicons",
-        event = { "BufAdd", "BufEnter", "tabnew" },
-        config = P.load_conf_as("bufferline", "config"),
-        init = P.load_conf_as("bufferline", "setup"),
-    },
+    --{
+    --    "akinsho/bufferline.nvim",
+    --    branch = "main",
+    --    dependencies = "nvim-web-devicons",
+    --    event = { "BufAdd", "BufEnter", "tabnew" },
+    --    config = P.load_conf_as("bufferline", "config"),
+    --    init = P.load_conf_as("bufferline", "setup"),
+    --},
 
     -- feline
-    {
-        "feline-nvim/feline.nvim",
-        lazy = false,
-        dependencies = "nvim-web-devicons",
-        config = P.load_conf_as("feline"),
-    },
+    --{
+    --    "feline-nvim/feline.nvim",
+    --    lazy = false,
+    --    dependencies = "nvim-web-devicons",
+    --    config = P.load_conf_as("feline"),
+    --},
 
     -- SmiteshP/nvim-navic
     {
@@ -361,7 +379,7 @@ local plugins = {
     --"windwp/nvim-autopairs"
     {
         "windwp/nvim-autopairs",
-        event = "InsertEnter",
+        --event = "InsertEnter",
         config = P.conf("autopairs"),
     },
 

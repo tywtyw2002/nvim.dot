@@ -19,19 +19,46 @@ M.load_config = function()
             },
             statusline = {
                 theme = "default",
-                separator_style = "default",
-                overriden_modules = nil,
+                separator_style = {
+                    left = "",
+                    right = ""
+                },
+                overriden_modules = nil
             },
             tabufline = {
                 enabled = true,
-                lazyload = true,
-                overriden_modules = nil,
+                lazyload = false,
+                overriden_modules = function ()
+                    return {
+                        buttons = function()
+                            --local toggle_transparency_Btn = "%@TbToggle_transparency@%#TbLineThemeToggleBtn#" .. vim.g.toggle_theme_icon .. " %X"
+                            local close_btn =  "%@TbCloseAllBufs@%#TbLineCloseAllBufsBtn#" .. " " .. "%X"
+                            return close_btn
+                        end
+                    }
+                end,
             },
             nvdash = {
-                load_on_startup = false,
-                header = {},
+                load_on_startup = true,
+                header = {
+                  "           ▄ ▄                   ",
+                  "       ▄   ▄▄▄     ▄ ▄▄▄ ▄ ▄     ",
+                  "       █ ▄ █▄█ ▄▄▄ █ █▄█ █ █     ",
+                  "    ▄▄ █▄█▄▄▄█ █▄█▄█▄▄█▄▄█ █     ",
+                  "  ▄ █▄▄█ ▄ ▄▄ ▄█ ▄▄▄▄▄▄▄▄▄▄▄▄▄▄  ",
+                  "  █▄▄▄▄ ▄▄▄ █ ▄ ▄▄▄ ▄ ▄▄▄ ▄ ▄ █ ▄",
+                  "▄ █ █▄█ █▄█ █ █ █▄█ █ █▄█ ▄▄▄ █ █",
+                  "█▄█ ▄ █▄▄█▄▄█ █ ▄▄█ █ ▄ █ █▄█▄█ █",
+                  "    █▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄█ █▄█▄▄▄█    ",
+                },
 
-                buttons = {},
+                buttons = {
+                    {"  New File  ", "SPC n b", "ene"},
+                    {"  Find File  ", "SPC f f", "Telescope find_files"},
+                    {"  Recents  ", "SPC f o", "Telescope oldfiles"},
+                    {"  Find Word  ", "SPC f w", "Telescope live_grep"},
+                    {"  Bookmarks  ", "SPC b m", "Telescope marks"},
+                },
             },
 
             cheatsheet = {
@@ -39,6 +66,10 @@ M.load_config = function()
             },
         },
     }
+end
+
+M.load_mappings = function ()
+
 end
 
 return M

@@ -5,6 +5,7 @@ local g = vim.g
 g.nvchad_theme = "tomorrow_night"
 g.base46_cache = vim.fn.stdpath "cache" .. "/nvchad/base46/"
 g.transparency = false
+g.toggle_theme_icon = g.transparency and "  " or "  "
 
 --g.nvchad_theme = "gruvchad"
 opt.cul = true -- cursor line
