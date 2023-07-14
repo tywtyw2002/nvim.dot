@@ -12,7 +12,26 @@ return function()
     dofile(vim.g.base46_cache .. "syntax")
 
     require("nvim-treesitter.configs").setup({
-        ensure_installed = { "lua", "python", "vim", "rust" },
+        ensure_installed = {
+            "lua",
+            "python",
+            "vim",
+            "rust",
+            "nix",
+            "bash",
+            "go",
+            "gomod",
+            "gosum",
+            "toml",
+            "yaml",
+            "json",
+            "c",
+            "html",
+            "css",
+            "javascript",
+            "typescript",
+            "tsx"
+        },
         highlight = {
             enable = true,
             use_languagetree = true,
