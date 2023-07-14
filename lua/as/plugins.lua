@@ -105,9 +105,10 @@ local plugins = {
         branch = "v2.0",
         lazy = false,
         config = function()
-            require "nvchad_ui"
+            require("nvchad_ui")
             --require('as.features.statusline').hotfix_hl()
-            vim.opt.statusline = "%!v:lua.require('as.features.statusline').run()"
+            vim.opt.statusline =
+                "%!v:lua.require('as.features.statusline').run()"
             --vim.cmd "function! TbToggle_transparency(a,b,c,d) \n lua require('as.colors').toggle_transparency() \n endfunction"
         end,
     },
@@ -151,8 +152,8 @@ local plugins = {
     -- 'lukas-reineke/indent-blankline.nvim'
     {
         "lukas-reineke/indent-blankline.nvim",
-        init = function ()
-            P.lazy_load "indent-blankline.nvim"
+        init = function()
+            P.lazy_load("indent-blankline.nvim")
         end,
         config = P.conf("blankline"),
     },
@@ -191,11 +192,11 @@ local plugins = {
 
     {
         "neovim/nvim-lspconfig",
-        init = function ()
-            P.lazy_load "nvim-lspconfig"
+        init = function()
+            P.lazy_load("nvim-lspconfig")
         end,
         config = P.load_conf_as("lspconfig", "lsp_config"),
-        dependencies = {"null-ls.nvim", "lsp_signature.nvim"}
+        dependencies = { "null-ls.nvim", "lsp_signature.nvim" },
     },
 
     -- null-ls
@@ -235,7 +236,7 @@ local plugins = {
             "cmp-path",
             -- with configs
             "L3MON4D3/LuaSnip",
-            "windwp/nvim-autopairs"
+            "windwp/nvim-autopairs",
         },
         event = { "InsertEnter" },
         config = P.load_conf_as("cmp"),
@@ -360,8 +361,8 @@ local plugins = {
     {
         --"norcalli/nvim-colorizer.lua",
         "NvChad/nvim-colorizer.lua",
-        init = function ()
-            P.lazy_load "nvim-colorizer.lua"
+        init = function()
+            P.lazy_load("nvim-colorizer.lua")
         end,
         config = P.conf("colorizer"),
     },
@@ -399,8 +400,8 @@ local plugins = {
     {
         "folke/todo-comments.nvim",
         dependencies = "plenary.nvim",
-        init = function ()
-            P.lazy_load "todo-comments.nvim"
+        init = function()
+            P.lazy_load("todo-comments.nvim")
         end,
         config = P.conf("todo_comments"),
     },
