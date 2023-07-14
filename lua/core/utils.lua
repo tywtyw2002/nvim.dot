@@ -64,6 +64,10 @@ M.load_config = function()
             cheatsheet = {
                 theme = "grid", -- simple/grid
             },
+
+            telescope = {
+                style = "borderless"
+            }
         },
     }
 end
