@@ -10,6 +10,7 @@ M.config = function()
     local defaults = {
         vimgrep_arguments = {
             "rg",
+            "-L",
             "--color=never",
             "--no-heading",
             "--with-filename",

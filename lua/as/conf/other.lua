@@ -14,7 +14,7 @@ M.blankline = function()
             "lspinfo",
             "TelescopePrompt",
             "TelescopeResults",
-            "nvchad_cheatsheet",
+            "nvcheatsheet",
             "mason",
             "alpha",
             "",

@@ -226,7 +226,7 @@ M.lsp = {
     },
     ["K"] = { "<cmd>lua vim.lsp.buf.hover()<CR>", "LSP: Hover" },
     ["<leader>fm"] = {
-        "<cmd>lua vim.lsp.buf.formatting()<CR>",
+        "<cmd>lua vim.lsp.buf.format { async = true }<CR>",
         "LSP: Format Buffer",
     },
 }

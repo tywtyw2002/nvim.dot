@@ -105,7 +105,7 @@ local plugins = {
         branch = "v2.0",
         lazy = false,
         config = function()
-            require("nvchad_ui")
+            require("nvchad")
             --require('as.features.statusline').hotfix_hl()
             vim.opt.statusline =
                 "%!v:lua.require('as.features.statusline').run()"
@@ -127,7 +127,7 @@ local plugins = {
         dependencies = {
             "telescope-fzf-native.nvim",
             "telescope-frecency.nvim",
-            "telescope-tmux.nvim",
+            --"telescope-tmux.nvim",
         },
     },
 
@@ -139,13 +139,14 @@ local plugins = {
         "nvim-telescope/telescope-frecency.nvim",
         dependencies = "tami5/sqlite.lua",
     },
-    { "camgraff/telescope-tmux.nvim" },
+    --{ "camgraff/telescope-tmux.nvim" },
 
     -- nvim-web-devicons
     {
         "kyazdani42/nvim-web-devicons",
         config = function()
             dofile(vim.g.base46_cache .. "devicons")
+            require("nvim-web-devicons").setup({ override = require "nvchad.icons.devicons" })
         end,
     },
 
@@ -156,6 +157,8 @@ local plugins = {
             P.lazy_load("indent-blankline.nvim")
         end,
         config = P.conf("blankline"),
+        event = "User FilePost",
+        version = "2.20.7",
     },
 
     -- Tree
@@ -437,7 +440,7 @@ local plugins = {
             P.lazy_load("nvim-treesitter")
         end,
         build = ":TSUpdate",
-        event = onBufLoad,
+        event = { "BufReadPost", "BufNewFile" },
         config = P.load_conf_as("treesitter"),
         dependencies = {
             "nvim-ts-rainbow",
@@ -467,6 +470,7 @@ local plugins = {
     --------------------------------------------------------------------------------
     {
         "lewis6991/gitsigns.nvim",
+        --event = "User FilePost",
         ft = "gitcommit",
         init = function()
             -- load gitsigns only when a git file is opened

@@ -88,6 +88,7 @@ local LSP_SERVERS = {
     pyright = true,
     yamlls = true,
     rust_analyzer = true,
+    nil_ls = true,
 }
 
 LSP_SERVERS.pylsp = {
@@ -196,7 +197,7 @@ M.mason_installer = function()
         "pyright",
 
         --
-        "deno",
+        --"deno",
 
         "yaml-lsp-server",
         "gopls",
@@ -210,7 +211,7 @@ M.mason_installer = function()
             icons = {
                 package_installed = " ",
                 package_pending = " ",
-                package_uninstalled = " ﮊ",
+                package_uninstalled = "󰚌 ",
             },
             keymaps = {
                 toggle_server_expand = "<CR>",
@@ -234,13 +235,28 @@ M.mason_installer = function()
     mason.setup(options)
 end
 
+
+local nixfmt_source = function ()
+    local h = require("null-ls.helpers")
+    return {
+        name = "nixfmt_plus",
+        filetypes = { ["nix"] = true },
+        methods = require("null-ls").methods.internal.FORMATTING,
+        generator_opts = {
+            command = "nixfmt",
+            to_stdin = true,
+        },
+        factory = h.formatter_factory
+    }
+end
+
 -- Null LS
 M.null_ls = function()
     local null_ls = require("null-ls")
     -- NOTE: this plugin will break if it's dependencies are not installed
     null_ls.setup({
         debounce = 250,
-        on_attach = L.on_attach,
+        --on_attach = L.on_attach,
         sources = {
             null_ls.builtins.code_actions.gitsigns,
             null_ls.builtins.formatting.stylua.with({
@@ -249,10 +265,14 @@ M.null_ls = function()
                         and _utils.root_has_file("stylua.toml")
                 end,
             }),
+            -- shell
+            null_ls.builtins.code_actions.shellcheck,
+            null_ls.builtins.formatting.shfmt,
+
+            null_ls.builtins.formatting.nixfmt,
+
             null_ls.builtins.formatting.rustfmt,
-            null_ls.builtins.formatting.deno_fmt,
             null_ls.builtins.formatting.prettier.with({
-                filetypes = { "html", "json", "yaml", "graphql", "markdown" },
                 condition = function()
                     return as.executable("prettier")
                 end,
