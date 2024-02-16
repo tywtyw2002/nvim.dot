@@ -41,7 +41,7 @@ local icons = {
     String = "",
     Calendar = " ",
     Watch = "",
-    Copilot = "",
+    Copilot = " ",
 }
 
 local function border(hl_name)

@@ -153,6 +153,17 @@ M.comment = {
     },
 }
 
+M.copilot = {
+    ["<leader>co"] = {
+        "<cmd>Copilot! attach <CR>",
+        "Copilot: Attach  ",
+    },
+    ["<leader>cD"] = {
+        "<cmd>Copilot detach <CR>",
+        "Copilot: Detach  ",
+    },
+}
+
 M.dashboard = {
     ["<leader>bm"] = { "<Cmd>DashboardJumpMarks <CR>", "Dashboard: Bookmark" },
     ["<leader>fn"] = { "<Cmd>DashboardNewFile <CR>", "Dashboard: New File" },

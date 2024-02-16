@@ -234,6 +234,9 @@ local plugins = {
         cmd = "Copilot",
         event = { "InsertEnter" },
         config = P.load_conf_as("copilot", "copilot_config"),
+        init = function()
+            require("which-key").register(require("as.mappings").copilot)
+        end,
     },
     {
         "zbirenbaum/copilot-cmp",
