@@ -199,7 +199,7 @@ M.mason_installer = function()
         --
         --"deno",
 
-        "yaml-lsp-server",
+        -- "yaml-lsp-server",
         "gopls",
         "rust-analyzer",
     }

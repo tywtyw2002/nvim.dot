@@ -9,6 +9,70 @@ local default_sep_icons = {
     arrow = { left = "", right = "" },
 }
 
+local c = {
+    icons = {
+        enabled = "",
+        sleep = "",
+        disabled = "",
+        warning = "",
+        unknown = "",
+    },
+    hl = {
+        enabled = "St_LspInfo",
+        --sleep = "#AEB7D0",
+        disabled = "St_EmptySpace",
+        warning = "St_lspWarning",
+        --unknown = "#FF5555",
+    },
+}
+
+function c:setup_hl()
+    local hl = vim.api.nvim_get_hl(0, {})
+    for name, color in pairs(self.hl) do
+        vim.api.nvim_set_hl(
+            0,
+            "St_copilot_" .. name,
+            { fg = hl["St_EmptySpace2"].fg, bg = hl[color].fg }
+        )
+        vim.api.nvim_set_hl(
+            0,
+            "St_copilot_" .. name .. "Sep",
+            { bg = hl["St_EmptySpace2"].fg, fg = hl[color].fg }
+        )
+    end
+end
+
+function c:get_api()
+    if not self.api then
+        local present, api = pcall(require, "copilot.api")
+        if not present then
+            return nil
+        end
+
+        self.api = api
+    end
+
+    return self.api
+end
+
+function c:get_client()
+    if not self.client then
+        local present, client = pcall(require, "copilot.client")
+        if not present then
+            return nil
+        end
+
+        self.client = client
+    end
+
+    return self.client
+end
+
+function c:attatched()
+    local client = self:get_client()
+    return client and client.buf_is_attached(vim.api.nvim_get_current_buf())
+end
+
 local separators = (type(sep_style) == "table" and sep_style)
     or default_sep_icons[sep_style]
 
@@ -16,6 +80,18 @@ local sep_l = separators["left"]
 local sep_r = separators["right"]
 
 local hotfixed = false
+
+local function gen_right_block(icon, text, sep_hl, icon_hl, text_hl)
+    local s = sep_hl .. sep_l .. icon_hl .. icon .. " "
+    if text then
+        s = s .. text_hl .. " " .. text
+    end
+    return s
+end
+
+local function get_right_fix()
+    return "%#St_EmptySep#" .. sep_l
+end
 
 local M = {}
 
@@ -67,17 +143,16 @@ M.modes = {
 
 M.mode = function()
     local m = vim.api.nvim_get_mode().mode
-    local mode_empty_sep = "%#St_EmptySep#" .. sep_l
-    local mode_sep1 = "%#"
-        .. M.modes[m][2]
-        .. "Sepl#"
-        .. sep_l
-        .. "%#"
-        .. M.modes[m][2]
-        .. "# "
-    local current_mode = "%#" .. M.modes[m][2] .. "Sep# " .. M.modes[m][1]
-
-    return mode_empty_sep .. mode_sep1 .. current_mode .. "%#St_EmptySpace# "
+    local icon_hl = "%#" .. M.modes[m][2] .. "#"
+    local text_hl = "%#" .. M.modes[m][2] .. "Text#"
+    local sep_hl = "%#" .. M.modes[m][2] .. "Sep#"
+    return gen_right_block(
+        "",
+        M.modes[m][1] .. " ",
+        sep_hl,
+        icon_hl,
+        text_hl
+    )
 end
 
 M.fileInfo = function()
@@ -203,39 +278,70 @@ M.LSP_Diagnostics = function()
 end
 
 M.LSP_status = function()
-    if rawget(vim, "lsp") then
-        for _, client in ipairs(vim.lsp.get_active_clients()) do
-            if
-                client.attached_buffers[vim.api.nvim_get_current_buf()]
-                and client.name ~= "null-ls"
-            then
-                return "%#St_LspStatus#"
-                    .. (
-                        (
-                            vim.o.columns > 120
-                            and "   LSP ~ " .. client.name .. " "
-                        ) or "   LSP "
-                    )
+    if not rawget(vim, "lsp") then
+        return ""
+    end
+
+    local lsp_clients = vim.lsp.get_active_clients()
+
+    -- local block = "%#St_EmptySep#" .. sep_l
+    local icon = ""
+    local client_name = nil
+    for _, client in ipairs(lsp_clients) do
+        if
+            client.attached_buffers[vim.api.nvim_get_current_buf()]
+            and client.name ~= "null-ls"
+            and client.name ~= "copilot"
+        then
+            if vim.o.columns > 100 then
+                client_name = client.name .. " "
+            else
+                client_name = "LSP "
+                icon = ""
             end
+            break
         end
     end
+
+    local copilot_status = M.copilot()
+
+    -- no lsp attatch
+    if not copilot_status and client_name == nil then
+        return ""
+    end
+
+    local text_hl = "%#St_LspStatus#"
+    local icon_hl = "%#St_LspStatusIcon#"
+    local sep_hl = "%#St_LspStatusSep#"
+
+    if copilot_status then
+        if copilot_status == "progress" then
+            copilot_status = 'enabled'
+
+            local spinners =
+        { "", "󰪞", "󰪟", "󰪠", "󰪢", "󰪣", "󰪤", "󰪥" }
+            local ms = vim.loop.hrtime() / 1000000
+            local frame = math.floor(ms / 120) % #spinners
+            client_name = spinners[frame + 1] .. "  "
+            text_hl = "%#St_LspStatusSpin#"
+        end
+        icon_hl = "%#St_copilot_" .. copilot_status .. "#"
+        sep_hl = "%#St_copilot_" .. copilot_status .. "Sep#"
+        icon = c.icons[copilot_status]
+    end
+
+    return gen_right_block(icon, client_name or "", sep_hl, icon_hl, text_hl)
 end
 
 M.cwd = function()
-    --local dir_icon = "%#St_cwd_icon#" .. "󰉋 "
-    --local dir_name = "%#St_cwd_text#" .. " " .. fn.fnamemodify(fn.getcwd(), ":t") .. " "
     local dir_name = "%#St_gitIcons#"
         .. " 󰉋 "
         .. fn.fnamemodify(fn.getcwd(), ":t")
         .. " "
     return (vim.o.columns > 85 and dir_name) or ""
-    --return (vim.o.columns > 85 and ("%#St_cwd_sep#" .. sep_l .. dir_name)) or ""
 end
 
 M.cursor_position = function()
-    local left_sep_space = "%#St_EmptySepSpace#" .. sep_l
-    local left_sep = "%#St_pos_sep#" .. sep_l .. "%#St_pos_icon#" .. " "
-
     local current_line = fn.line(".")
     local total_line = fn.line("$")
     local text = math.modf((current_line / total_line) * 100) .. tostring("%%")
@@ -244,63 +350,94 @@ M.cursor_position = function()
     text = (current_line == 1 and "Top") or text
     text = (current_line == total_line and "Bot") or text
 
-    return left_sep_space .. left_sep .. "%#St_pos_text#" .. " " .. text .. " "
+    return gen_right_block(
+        "",
+        text,
+        "%#St_pos_sep#",
+        "%#St_pos_icon#",
+        "%#St_pos_text#"
+    )
 end
 
 M.hotfix_hl = function()
     local hl = vim.api.nvim_get_hl(0, {})
+
+    -- reverse the bg & fg for ST_MODE
     local modes = {}
     for _, m in pairs(M.modes) do
         local hl_name = m[2]
         modes[hl_name] = true
     end
 
-    local bg = hl["St_EmptySpace"].bg
+    --bg should be colors.lightbg
+    local background = hl["St_EmptySpace"].bg
     for name, _ in pairs(modes) do
-        --hl_conf = hl[name]
-
-        --if hl_conf then
-        --  --local bg, fg = hl_conf.bg, hl_conf.fg
-        --  hl_conf.fg = hl_conf.bg
-        --  hl_conf.bg = empty.bg
-        --  vim.api.nvim_set_hl(0, name, hl_conf)
-        --end
-
-        hl_sep = hl[name .. "Sep"]
+        local hl_sep = hl[name .. "Sep"]
         if hl_sep then
-            hl_sep.bg = bg
+            hl_sep.bg = background
             vim.api.nvim_set_hl(0, name .. "Sep", hl_sep)
-            hl_sep.bg = hl["St_EmptySpace"].fg
-            vim.api.nvim_set_hl(0, name .. "Sepl", hl_sep)
+            vim.api.nvim_set_hl(0, name .. "Text", hl_sep)
         end
     end
 
     local pos_sep = hl["St_pos_sep"]
 
+    -- sep fix for last item
     vim.api.nvim_set_hl(
         0,
         "St_EmptySep",
-        { bg = hl["St_EmptySpace2"].bg, fg = hl["St_EmptySpace"].fg }
+        { bg = hl["St_EmptySpace2"].bg, fg = background }
     )
-    vim.api.nvim_set_hl(
-        0,
-        "St_EmptySepSpace",
-        { bg = pos_sep.bg, fg = hl["St_EmptySpace"].fg }
-    )
-
-    pos_sep.bg = hl["St_EmptySpace"].fg
+    pos_sep.bg = background
     vim.api.nvim_set_hl(0, "St_pos_sep", pos_sep)
-    --vim.api.nvim_set_hl(0, "St_cwd_icon", {fg=hl['St_EmptySpace2'].fg, bg=hl['St_EmptySpace2'].bg}})
+
+    -- fix St_LspStatus
+    local lsp_status = hl["St_LspStatus"]
+    lsp_status.bg = background
+    lsp_status.fg = hl["St_LspHints"].fg
+    vim.api.nvim_set_hl(0, "St_LspStatusSep", lsp_status)
+    lsp_status.bg = hl["St_LspHints"].fg
+    lsp_status.fg = hl["St_EmptySpace2"].fg
+    vim.api.nvim_set_hl(0, "St_LspStatusIcon", lsp_status)
+    lsp_status.fg = hl["St_gitIcons"].fg
+    lsp_status.bg = background
+    vim.api.nvim_set_hl(0, "St_LspStatus", lsp_status)
+    lsp_status.fg = hl["St_lspWarning"].fg
+    lsp_status.bg = background
+    vim.api.nvim_set_hl(0, "St_LspStatusSpin", lsp_status)
+end
+
+M.copilot = function()
+    local client = c:get_client()
+    local api = c:get_api()
+    if not client or not api then
+        return nil
+    end
+
+    --check copilot enabled and attatched
+    -- and not client.is_current_buffer_attached()
+    if client.is_disabled() or not c:attatched() then
+        return nil
+    end
+
+    local status = api.status.data.status
+    if status == "Warning" then
+        -- return "%#St_copilot_warning# " .. c.icons.warning
+        return "warning"
+    end
+
+    ---- InProgress
+    if status == "InProgress" then
+       return "progress"
+    end
+
+    return "enabled"
 end
 
 M.run = function()
-    --local modules = require "nvchad_ui.statusline.default"
-
-    --if config.overriden_modules then
-    --modules = vim.tbl_deep_extend("force", modules, config.overriden_modules())
-    --end
     if not hotfixed then
         M.hotfix_hl()
+        c:setup_hl()
         hotfixed = true
     end
 
@@ -317,8 +454,9 @@ M.run = function()
         modules.LSP_progress(),
         "%=",
 
-        modules.LSP_status() or "",
         modules.git(),
+        get_right_fix(),
+        modules.LSP_status(),
         modules.mode(),
         modules.cursor_position(),
     })

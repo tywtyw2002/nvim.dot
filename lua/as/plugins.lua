@@ -228,6 +228,19 @@ local plugins = {
     -----------------------------------------------------------------------------//
     -- CMP
     -----------------------------------------------------------------------------//
+    -- Copilot
+    {
+        "zbirenbaum/copilot.lua",
+        cmd = "Copilot",
+        event = { "InsertEnter" },
+        config = P.load_conf_as("copilot", "copilot_config"),
+    },
+    {
+        "zbirenbaum/copilot-cmp",
+        config = P.load_conf_as("copilot", "copilot_cmp"),
+        event = { "InsertEnter", "LspAttach" },
+        fix_pairs = true,
+    },
     -- CMP
     {
         "hrsh7th/nvim-cmp",
@@ -238,6 +251,7 @@ local plugins = {
             "cmp-buffer",
             "cmp-path",
             -- with configs
+            --"zbirenbaum/copilot-cmp",
             "L3MON4D3/LuaSnip",
             "windwp/nvim-autopairs",
         },

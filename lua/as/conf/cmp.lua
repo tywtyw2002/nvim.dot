@@ -41,6 +41,7 @@ local icons = {
     String = "",
     Calendar = " ",
     Watch = "",
+    Copilot = "",
 }
 
 local function border(hl_name)
@@ -117,6 +118,7 @@ local default = {
         end, { "i", "s" }),
     },
     sources = {
+        { name = "copilot" },
         { name = "luasnip" },
         { name = "nvim_lsp" },
         { name = "buffer" },
