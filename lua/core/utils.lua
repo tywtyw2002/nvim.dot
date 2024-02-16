@@ -21,43 +21,45 @@ M.load_config = function()
                 theme = "default",
                 separator_style = {
                     left = "",
-                    right = ""
+                    right = "",
                 },
-                overriden_modules = nil
+                overriden_modules = nil,
             },
             tabufline = {
                 enabled = true,
                 lazyload = false,
-                overriden_modules = function ()
-                    return {
-                        buttons = function()
-                            --local toggle_transparency_Btn = "%@TbToggle_transparency@%#TbLineThemeToggleBtn#" .. vim.g.toggle_theme_icon .. " %X"
-                            local close_btn =  "%@TbCloseAllBufs@%#TbLineCloseAllBufsBtn#" .. " " .. "%X"
-                            return close_btn
-                        end
-                    }
+                overriden_modules = function(M)
+                    local buttons = function()
+                        local toggle_transparency_Btn = "%@TbToggle_transparency@%#TbLineThemeToggleBtn#" .. vim.g.toggle_theme_icon .. " %X"
+                        local close_btn = "%@TbCloseAllBufs@%#TbLineCloseAllBufsBtn#"
+                            .. " "
+                            .. "%X"
+                        return toggle_transparency_Btn .. close_btn
+                    end
+                    table.remove(M, 4)
+                    table.insert(M, buttons())
                 end,
             },
             nvdash = {
                 load_on_startup = true,
                 header = {
-                  "           ▄ ▄                   ",
-                  "       ▄   ▄▄▄     ▄ ▄▄▄ ▄ ▄     ",
-                  "       █ ▄ █▄█ ▄▄▄ █ █▄█ █ █     ",
-                  "    ▄▄ █▄█▄▄▄█ █▄█▄█▄▄█▄▄█ █     ",
-                  "  ▄ █▄▄█ ▄ ▄▄ ▄█ ▄▄▄▄▄▄▄▄▄▄▄▄▄▄  ",
-                  "  █▄▄▄▄ ▄▄▄ █ ▄ ▄▄▄ ▄ ▄▄▄ ▄ ▄ █ ▄",
-                  "▄ █ █▄█ █▄█ █ █ █▄█ █ █▄█ ▄▄▄ █ █",
-                  "█▄█ ▄ █▄▄█▄▄█ █ ▄▄█ █ ▄ █ █▄█▄█ █",
-                  "    █▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄█ █▄█▄▄▄█    ",
+                    "           ▄ ▄                   ",
+                    "       ▄   ▄▄▄     ▄ ▄▄▄ ▄ ▄     ",
+                    "       █ ▄ █▄█ ▄▄▄ █ █▄█ █ █     ",
+                    "    ▄▄ █▄█▄▄▄█ █▄█▄█▄▄█▄▄█ █     ",
+                    "  ▄ █▄▄█ ▄ ▄▄ ▄█ ▄▄▄▄▄▄▄▄▄▄▄▄▄▄  ",
+                    "  █▄▄▄▄ ▄▄▄ █ ▄ ▄▄▄ ▄ ▄▄▄ ▄ ▄ █ ▄",
+                    "▄ █ █▄█ █▄█ █ █ █▄█ █ █▄█ ▄▄▄ █ █",
+                    "█▄█ ▄ █▄▄█▄▄█ █ ▄▄█ █ ▄ █ █▄█▄█ █",
+                    "    █▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄█ █▄█▄▄▄█    ",
                 },
 
                 buttons = {
-                    {"  New File  ", "SPC n b", "ene"},
-                    {"  Find File  ", "SPC f f", "Telescope find_files"},
-                    {"  Recents  ", "SPC f o", "Telescope oldfiles"},
-                    {"  Find Word  ", "SPC f w", "Telescope live_grep"},
-                    {"  Bookmarks  ", "SPC b m", "Telescope marks"},
+                    { "  New File  ", "SPC n b", "ene" },
+                    { "  Find File  ", "SPC f f", "Telescope find_files" },
+                    { "  Recents  ", "SPC f o", "Telescope oldfiles" },
+                    { "  Find Word  ", "SPC f w", "Telescope live_grep" },
+                    { "  Bookmarks  ", "SPC b m", "Telescope marks" },
                 },
             },
 
@@ -66,14 +68,12 @@ M.load_config = function()
             },
 
             telescope = {
-                style = "borderless"
-            }
+                style = "borderless",
+            },
         },
     }
 end
 
-M.load_mappings = function ()
-
-end
+M.load_mappings = function() end
 
 return M

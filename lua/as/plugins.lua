@@ -109,7 +109,7 @@ local plugins = {
             --require('as.features.statusline').hotfix_hl()
             vim.opt.statusline =
                 "%!v:lua.require('as.features.statusline').run()"
-            --vim.cmd "function! TbToggle_transparency(a,b,c,d) \n lua require('as.colors').toggle_transparency() \n endfunction"
+            vim.cmd "function! TbToggle_transparency(a,b,c,d) \n lua require('as.colors').set_transparency(not vim.g.transparency) \n endfunction"
         end,
     },
 

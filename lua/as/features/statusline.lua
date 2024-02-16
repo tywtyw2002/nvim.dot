@@ -359,6 +359,10 @@ M.cursor_position = function()
     )
 end
 
+M.reset_hl = function()
+    hotfixed = false
+end
+
 M.hotfix_hl = function()
     local hl = vim.api.nvim_get_hl(0, {})
 

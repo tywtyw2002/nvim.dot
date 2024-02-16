@@ -32,7 +32,9 @@ end
 
 M.set_transparency = function(status)
     vim.g.transparency = status
+    vim.g.toggle_theme_icon = status and "  " or "  "
     require("base46").load_all_highlights()
+    require('as.features.statusline').reset_hl()
 end
 
 return M
