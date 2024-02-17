@@ -4,16 +4,17 @@ if not present then
     return
 end
 
-vim.opt.completeopt = "menuone,noselect"
+-- vim.opt.completeopt = "menuone,noselect"
 
 local icons = {
+    Namespace = "󰌗 ",
     Text = "",
     Method = "",
     Function = "",
     Constructor = "",
     Field = "",
     Variable = "",
-    Class = "",
+    Class = "󰠱 ",
     Interface = "",
     Module = "",
     Property = "",
@@ -28,20 +29,24 @@ local icons = {
     Folder = "",
     EnumMember = "",
     Constant = "",
-    Struct = "",
+    Struct = "󰙅 ",
     Event = "",
     Operator = "",
     TypeParameter = "",
-    Table = " ",
+    Table = "",
     Object = "",
-    Tag = " ",
-    Array = " ",
+    Tag = "",
+    Array = "",
     Boolean = "蘒",
     Number = "",
+    Null = "󰟢 ",
     String = "",
-    Calendar = " ",
+    Calendar = "",
     Watch = "",
     Copilot = " ",
+    Package = "",
+    Codeium = "",
+    TabNine = "",
 }
 
 local function border(hl_name)
@@ -67,12 +72,19 @@ cmp_window.info = function(self)
 end
 
 local default = {
+    completion = {
+        completeopt = "menu,menuone",
+    },
     window = {
         completion = {
+            side_padding = 1,
             border = border "CmpBorder",
+            scrollbar = false,
+            winhighlight = "Normal:CmpPmenu,CursorLine:CmpSel,Search:None",
         },
         documentation = {
             border = border "CmpDocBorder",
+            winhighlight = "Normal:CmpDoc",
         },
     },
     snippet = {
@@ -82,7 +94,7 @@ local default = {
     },
     formatting = {
         format = function(_, vim_item)
-            vim_item.kind = string.format("%s %s", icons[vim_item.kind], vim_item.kind)
+            vim_item.kind = string.format(" %s  %s", icons[vim_item.kind], vim_item.kind)
 
             return vim_item
         end,
@@ -95,7 +107,7 @@ local default = {
         ["<C-Space>"] = cmp.mapping.complete(),
         ["<C-e>"] = cmp.mapping.close(),
         ["<CR>"] = cmp.mapping.confirm({
-            --behavior = cmp.ConfirmBehavior.Insert,
+            behavior = cmp.ConfirmBehavior.Insert,
             select = true,
         }),
         ["<Tab>"] = cmp.mapping(function(fallback)

@@ -1,5 +1,31 @@
 local M = {}
 
+-- Convert mapping for cheatsheet
+local function convert_mappings()
+    local mappings = require("as.mappings")
+    local results = {}
+
+    for name, maps in pairs(mappings) do
+        if type(maps) == "table" then
+            local r = {}
+            for key, info in pairs(maps) do
+                local mode = info.mode or "n"
+                if r[mode] == nil then
+                    r[mode] = {}
+                end
+
+                r[mode][key] = {nil, info[2]}
+            end
+            if name == "general_mappings" then
+                name = "general"
+            end
+            results[name] = r
+        end
+    end
+
+    return results
+end
+
 -- Inject Config for base46 Themes
 M.load_config = function()
     return {
@@ -71,6 +97,7 @@ M.load_config = function()
                 style = "borderless",
             },
         },
+        mappings = convert_mappings(),
     }
 end
 

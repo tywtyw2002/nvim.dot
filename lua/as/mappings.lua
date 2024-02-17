@@ -119,6 +119,7 @@ M.general_mappings = {
     ["<leader>nb"] = { "<cmd>enew <CR>", "New Buffer 烙" },
     ["<leader>nt"] = { "<cmd>tabnew <CR>", "New Tab 烙" },
     ["<leader>nu"] = { "<cmd>set nu! <CR>", "Toggle Line Number " },
+    ["<leader>ch"] = { "<cmd> NvCheatsheet <CR>", "Mapping cheatsheet" },
     ["<Esc><Esc>"] = {
         termcodes("<C-\\><C-N>"),
         "Escape Terminal Mode ",
