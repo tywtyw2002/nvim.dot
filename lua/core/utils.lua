@@ -1,25 +1,31 @@
 local M = {}
 
+local mappings = nil
+
+local function convert_format(maps)
+    local r = {}
+    for key, info in pairs(maps) do
+        local mode = info.mode or "n"
+        if r[mode] == nil then
+            r[mode] = {}
+        end
+
+        r[mode][key] = {nil, info[2]}
+    end
+    return r
+end
+
 -- Convert mapping for cheatsheet
-local function convert_mappings()
+local function get_nv_mappings()
     local mappings = require("as.mappings")
     local results = {}
 
     for name, maps in pairs(mappings) do
         if type(maps) == "table" then
-            local r = {}
-            for key, info in pairs(maps) do
-                local mode = info.mode or "n"
-                if r[mode] == nil then
-                    r[mode] = {}
-                end
-
-                r[mode][key] = {nil, info[2]}
-            end
             if name == "general_mappings" then
                 name = "general"
             end
-            results[name] = r
+            results[name] = convert_format(maps)
         end
     end
 
@@ -28,6 +34,9 @@ end
 
 -- Inject Config for base46 Themes
 M.load_config = function()
+    if mappings == nil then
+        mappings = get_nv_mappings()
+    end
     return {
         ui = {
             changed_themes = {},
@@ -97,10 +106,17 @@ M.load_config = function()
                 style = "borderless",
             },
         },
-        mappings = convert_mappings(),
+        mappings = mappings,
     }
 end
 
 M.load_mappings = function() end
 
+M.set_mapping = function(name, maps)
+    if mappings == nil then
+        mappings = get_nv_mappings()
+    end
+
+    mappings[name] = convert_format(maps)
+end
 return M

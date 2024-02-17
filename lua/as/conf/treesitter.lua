@@ -29,8 +29,8 @@ return function()
             "html",
             "css",
             "javascript",
-            "typescript",
-            "tsx"
+            -- "typescript",
+            -- "tsx"
         },
         highlight = {
             enable = true,
