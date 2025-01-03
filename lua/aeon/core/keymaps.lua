@@ -1,0 +1,6 @@
+vim.schedule(function()
+    require("aeon.mappings")
+    require("aeon.configs.telescope").keybinds()
+    require("aeon.configs.trouble").keybinds()
+    -- require("aeon.configs.lspconfig").keybinds()
+end)
