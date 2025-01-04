@@ -9,7 +9,7 @@ o.showmode = false
 o.clipboard = "unnamedplus"
 o.cursorline = true
 o.cursorlineopt = "screenline,number"
-opt.completeopt = { 'menuone', 'noselect' }
+opt.completeopt = { "menuone", "noselect" }
 opt.guicursor = {
     [[n-v-c:block,i-ci-ve:ver25,r-cr:hor20,o:hor50]],
     [[a:blinkwait700-blinkoff400-blinkon250-Cursor/lCursor]],
@@ -38,7 +38,7 @@ o.numberwidth = 2
 o.ruler = false
 
 -- disable nvim intro
-opt.shortmess:append "sI"
+opt.shortmess:append("sI")
 
 o.signcolumn = "yes"
 o.splitbelow = true
@@ -51,15 +51,14 @@ o.timeoutlen = 500
 
 -- go to previous/next line with h,l,left arrow and right arrow
 -- when cursor reaches end/beginning of line
-opt.whichwrap:append "<>[]hl"
+opt.whichwrap:append("<>[]hl")
 
 -- o.titleold = vim.fn.fnamemodify(vim.loop.os_getenv 'SHELL', ':t')
 o.title = true
 o.titlelen = 70
 
-
 if g.neovide then
-    o.guifont = 'PragmataProLiga Nerd Font:h14'
+    o.guifont = "PragmataProLiga Nerd Font:h14"
     g.neovide_transparency = 0.9
     g.neovide_cursor_antialiasing = true
     -- vim.g.neovide_refresh_rate = 75

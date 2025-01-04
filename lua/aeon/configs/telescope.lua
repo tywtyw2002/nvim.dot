@@ -39,12 +39,9 @@ M.keybinds = function()
     map("n", "<leader>fb", builtin.buffers, { desc = "Telescope Find Buffer" })
     -- files
     map("n", "<leader>ff", builtin.find_files, { desc = "Telescope Find File" })
-    map(
-        "n",
-        "<leader>fa",
-        function() builtin.find_files({ follow = true, no_ignore = true, hidden = true }) end,
-        { desc = "Telescope Find All Files" }
-    )
+    map("n", "<leader>fa", function()
+        builtin.find_files({ follow = true, no_ignore = true, hidden = true })
+    end, { desc = "Telescope Find All Files" })
     map("n", "<leader>fo", builtin.oldfiles, { desc = "Telescope Old Files" })
     map("n", "<leader>fg", builtin.git_files, { desc = "Telescope Git Files" })
     -- gits

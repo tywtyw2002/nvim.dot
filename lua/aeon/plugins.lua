@@ -29,7 +29,7 @@ return {
 
     "nvzone/volt",
     "nvzone/menu",
-    { "nvzone/minty",         cmd = { "Huefy", "Shades" } },
+    { "nvzone/minty", cmd = { "Huefy", "Shades" } },
 
     {
         "nvim-tree/nvim-web-devicons",

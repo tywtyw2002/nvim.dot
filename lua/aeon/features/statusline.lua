@@ -195,13 +195,13 @@ M.gitstatus = function()
     local git_status = vim.b.gitsigns_status_dict
 
     local added = (git_status.added and git_status.added ~= 0)
-        and ("%#St_LspInfo#  " .. git_status.added)
+            and ("%#St_LspInfo#  " .. git_status.added)
         or ""
     local changed = (git_status.changed and git_status.changed ~= 0)
-        and ("%#St_lspWarning#  " .. git_status.changed)
+            and ("%#St_lspWarning#  " .. git_status.changed)
         or ""
     local removed = (git_status.removed and git_status.removed ~= 0)
-        and ("%#St_lspError#  " .. git_status.removed)
+            and ("%#St_lspError#  " .. git_status.removed)
         or ""
 
     return "%#St_gitIcons#" .. added .. changed .. removed .. "%*"
@@ -232,7 +232,7 @@ M.LSP_progress = function()
     local percentage = Lsp.percentage or 0
     local title = Lsp.title or ""
     local spinners =
-    { "", "󰪞", "󰪟", "󰪠", "󰪢", "󰪣", "󰪤", "󰪥" }
+        { "", "󰪞", "󰪟", "󰪠", "󰪢", "󰪣", "󰪤", "󰪥" }
     local ms = vim.loop.hrtime() / 1000000
     local frame = math.floor(ms / 120) % #spinners
     local content = string.format(
@@ -265,13 +265,13 @@ M.LSP_Diagnostics = function()
         #vim.diagnostic.get(0, { severity = vim.diagnostic.severity.INFO })
 
     errors = (errors and errors > 0)
-        and ("%#St_lspError#" .. " " .. errors .. " ")
+            and ("%#St_lspError#" .. " " .. errors .. " ")
         or ""
     warnings = (warnings and warnings > 0)
-        and ("%#St_lspWarning#" .. "  " .. warnings .. " ")
+            and ("%#St_lspWarning#" .. "  " .. warnings .. " ")
         or ""
     hints = (hints and hints > 0)
-        and ("%#St_lspHints#" .. "󰛩 " .. hints .. " ")
+            and ("%#St_lspHints#" .. "󰛩 " .. hints .. " ")
         or ""
     info = (info and info > 0) and ("%#St_lspInfo#" .. "󰋼 " .. info .. " ")
         or ""
@@ -397,11 +397,7 @@ M.hotfix_hl = function()
     local pos_sep = hl["St_pos_sep"]
 
     -- sep fix for last item
-    vim.api.nvim_set_hl(
-        0,
-        "St_EmptySep",
-        { bg = "none", fg = background }
-    )
+    vim.api.nvim_set_hl(0, "St_EmptySep", { bg = "none", fg = background })
     pos_sep.bg = background
     vim.api.nvim_set_hl(0, "St_pos_sep", pos_sep)
 

@@ -30,10 +30,10 @@ local default = {
         enable = true,
         keymaps = {
             -- mappings for incremental selection (visual mappings)
-            init_selection = "<leader>v",   -- maps in normal mode to init the node/scope selection
+            init_selection = "<leader>v", -- maps in normal mode to init the node/scope selection
             node_incremental = "<leader>v", -- increment to the upper named parent
-            node_decremental = "<BS>",      -- decrement to the previous node
-            scope_incremental = "<TAB>",    -- increment to the upper scope (as defined in locals.scm)
+            node_decremental = "<BS>", -- decrement to the previous node
+            scope_incremental = "<TAB>", -- increment to the upper scope (as defined in locals.scm)
         },
     },
 
@@ -47,16 +47,34 @@ local default = {
         select = {
             enable = true,
             keymaps = {
-                ["af"] = { query = "@function.outer", desc = "TS [S] Function Outer" },
-                ["if"] = { query = "@function.inner", desc = "TS [S] Function Inner" },
+                ["af"] = {
+                    query = "@function.outer",
+                    desc = "TS [S] Function Outer",
+                },
+                ["if"] = {
+                    query = "@function.inner",
+                    desc = "TS [S] Function Inner",
+                },
                 ["ac"] = { query = "@class.outer", desc = "TS [S] Class Outer" },
                 ["ic"] = { query = "@class.inner", desc = "TS [S] Class Inner" },
-                ["ad"] = { query = "@conditional.outer", desc = "TS [S] Cond Outer" },
-                ["id"] = { query = "@conditional.inner", desc = "TS [S] Cond Inner" },
+                ["ad"] = {
+                    query = "@conditional.outer",
+                    desc = "TS [S] Cond Outer",
+                },
+                ["id"] = {
+                    query = "@conditional.inner",
+                    desc = "TS [S] Cond Inner",
+                },
                 ["ak"] = { query = "@call.outer", desc = " TS [S] Call Outer" },
                 ["ik"] = { query = "@call.inner", desc = "TS [S] Call Inner" },
-                ["as"] = { query = "@statement.outer", desc = "TS [S] Statement Outer" },
-                ["is"] = { query = "@statement.inner", desc = "TS [S] Statement Inner" },
+                ["as"] = {
+                    query = "@statement.outer",
+                    desc = "TS [S] Statement Outer",
+                },
+                ["is"] = {
+                    query = "@statement.inner",
+                    desc = "TS [S] Statement Inner",
+                },
             },
         },
         swap = {

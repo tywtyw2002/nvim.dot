@@ -5,7 +5,7 @@ vim.opt.rtp:prepend(vim.g.dotpath)
 ------------------------------------------------------------------------
 -- Leader bindings
 ------------------------------------------------------------------------
-vim.g.mapleader = ","       -- Remap leader key
+vim.g.mapleader = "," -- Remap leader key
 vim.g.maplocalleader = "\\" -- Local leader is \
 
 local ok, reload = pcall(require, "plenary.reload")
@@ -20,7 +20,7 @@ end
 ------------------------------------------------------------------------
 -- Plugin Configurations
 ----------------------------------------------------------------------
-R("aeon")              -- load core paths
+R("aeon") -- load core paths
 
 R("aeon.core.plugins") -- load plugins
 

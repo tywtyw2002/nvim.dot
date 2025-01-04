@@ -14,11 +14,15 @@ local default = {
 
 M.options = function()
     dofile(vim.g.base46_cache .. "git")
-    vim.api.nvim_set_hl(0, 'GitSignsAdd', { link = 'DiffAdd' })
-    vim.api.nvim_set_hl(0, 'GitSignsChange', { link = 'DiffChange' })
-    vim.api.nvim_set_hl(0, 'GitSignsDelete', { link = 'DiffChange' })
-    vim.api.nvim_set_hl(0, 'GitSignsTopdelete', { link = 'DiffDelete' })
-    vim.api.nvim_set_hl(0, 'GitSignsChangedelete', { link = 'DiffChangeDelete' })
+    vim.api.nvim_set_hl(0, "GitSignsAdd", { link = "DiffAdd" })
+    vim.api.nvim_set_hl(0, "GitSignsChange", { link = "DiffChange" })
+    vim.api.nvim_set_hl(0, "GitSignsDelete", { link = "DiffChange" })
+    vim.api.nvim_set_hl(0, "GitSignsTopdelete", { link = "DiffDelete" })
+    vim.api.nvim_set_hl(
+        0,
+        "GitSignsChangedelete",
+        { link = "DiffChangeDelete" }
+    )
     return default
 end
 
